@@ -23,3 +23,8 @@ To run it, you'll have to make a few changes to your IIS Express server:
 1. Open C:\Users\You\Documents\IISExpress\config\applicationhost.config  
 2. Add this line after the txt line:
  * `<mimeMap fileExtension=".json" mimeType="text/plain" />`
+
+### Coding guidelines
+
+If there is an issue with the code you are committing in, but the net sum of the change is positive, don't let that stop you! Just add a comment in the code explaining that (e.g. `//TODO#99 Recolor this`) and make sure to make an issue for the problem. I'm going to try avoiding checking in any TODO without an active issue. If it's too much work to file the issue, that means you should probably just fix your code :)
+
