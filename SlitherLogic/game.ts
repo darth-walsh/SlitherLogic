@@ -1,7 +1,7 @@
 /// <reference path="lib\jquery.d.ts" />
 /// <reference path="lib\kinetic.d.ts" />
 
-declare var requestAnimFrame: (f: () => any) => any;
+declare var requestAnimFrame: (f: () => any) => any; //TODO#12 delete?
 
 class Point {
   constructor(public x: number = 0, public y: number = 0) { }
@@ -18,7 +18,7 @@ class Point {
   }
 }
 
-//TODO put intp UI.ts
+//TODO#2 put into UI.ts
 class UIVertex {
   static radius = 7;
   static yesColor = 'white';
@@ -67,7 +67,7 @@ class UIEdge {
       lineCap: 'round',
       dashArray: [1, UIEdge.unWidth * 2]
     });
-    //TODO hit region
+    //TODO#3 hit region
 
     this.shape.on('click', (...evts: MouseEvent[]) => {
       var evt = evts[0];
@@ -103,7 +103,7 @@ class UIEdge {
           this.shape.setStrokeWidth(UIEdge.unWidth);
           break;
       }
-      Game.layer.draw(); //TODO figure out better draw?
+      Game.layer.draw(); //TODO#4 figure out better draw?
     });
     this.edge.updateUI();
   }
@@ -116,7 +116,7 @@ class UIEdge {
 
   static getRandomColor(): string {
     //return UIEdge.rainbow(36, Math.floor(Math.random() * 36));
-    return 'blue';
+    return 'blue'; //TODO#5 color stuff the color of adjacent lines
     //return '#' + Math.floor(Math.random() * 16777215).toString(16);
   }
 
@@ -211,12 +211,11 @@ class Game {
     window.addEventListener('click', function (e) {
       Game.onResize();
       e.preventDefault();
-      //TODO add input GAME.Input.set(e);
     }, false);
     //listen for touches
     window.addEventListener('touchstart', function (e) {
       e.preventDefault();
-      //TODO add input GAME.Input.set(e.touches[0]);
+      //TODO#6 add input GAME.Input.set(e.touches[0])? Figure out what happens on mobile
     }, false);
     window.addEventListener('touchmove', function (e) {
       e.preventDefault();
@@ -238,7 +237,7 @@ class Game {
     Game.layer = new Kinetic.Layer();
     Game.stage.add(Game.layer);
 
-    //TODO clean out circular references?
+    //TODO#7 clean out circular references?
     Game.vertices = {};
     Game.edges = {};
     Game.hints = {};
@@ -249,7 +248,7 @@ class Game {
     $.getJSON(url).then(function (level) {
       for (var v in level.vertices) {
         Game.vertices[v] = new UIVertex(level.vertices[v]);
-      }
+      }//TODO#9 fail case
 
       for (var e in level.edges) {
         var edge = level.edges[e];
@@ -261,20 +260,20 @@ class Game {
         Game.hints[h] = new UIHint(hint.position, hint.edges.map(e => Game.edges[e]));
       }
 
-      //TODO input from selected puzzle
+      //TODO#8 persist which puzzles the user has finished
       Game.loadPuzzle('data/test/1.txt');
 
-      //Game.loop();
+      //Game.loop(); //TODO#12 delete?
       Game.resize();
     });
   }
 
   static loadPuzzle(url: string) {
-    $.get(url, hints => { //TODO strip hints of newlines
+    $.get(url, hints => { //TODO#1 strip hints of newlines
       for (var i = 0; i < hints.length; ++i)
         Game.hints['h' + i].setNum(hints.charAt(i)); 
       Game.layer.draw();
-    }); //TODO fail case
+    }); //TODO#9 fail case
   }
 
   static resizing: boolean = false;
@@ -298,7 +297,7 @@ class Game {
     Game.stage.setWidth($('#container').width());
     Game.stage.setHeight($('#container').height());
 
-    //TODO use Game.ios||android
+    //TODO#10 use Game.ios||android
 
     for (var v in Game.vertices) {
       Game.vertices[v].reposition();
@@ -330,13 +329,13 @@ class Game {
   //}
 
   static getVirtualPoint(p: Point): Point {
-    return new Point(p.x * 30 + 60, p.y * 30 + 60); //TODO variable size logic
+    return new Point(p.x * 30 + 60, p.y * 30 + 60); //TODO#11 variable size logic
   }
 
   static loop() {
     requestAnimFrame(Game.loop);
 
-    //TODO anything that needs to happen on a loop?
+    //TODO#12 delete?
   }
 }
 

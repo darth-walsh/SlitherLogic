@@ -91,7 +91,7 @@ class Logic {
           done = false;
       for (var i = 0; i < Logic.edges.length; ++i)
         if (Logic.edges[i].selected === null)
-          done = false; //TODO maybe throw exception?
+          done = false; //TODO#13 harden so we feel comfortable this won't happen
       for (var i = 0; i < Logic.hints.length; ++i)
         if (!Logic.hints[i].valid())
           done = false;
