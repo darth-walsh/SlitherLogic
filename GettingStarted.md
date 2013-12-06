@@ -10,12 +10,12 @@ _(If this is missing a step, feel free to ask Carl!)_
 Visual Studio is your one-stop-shop Integrated Development Environment. You could probably even use it's web browser to play the game!
 
 You'll need some version of Visual Studio:
-* Visual Studio Express 2012 for Web 
- * [free download](http://www.microsoft.com/en-us/download/details.aspx?id=30669)
-* Visual Studio Professional 2012
- * [free for students](https://www.dreamspark.com/Product/Product.aspx?productid=51)
+* Visual Studio Express 2013 for Web 
+ * [free download](http://www.microsoft.com/en-us/download/details.aspx?id=40747)
+* Visual Studio Professional 2013
+ * [free for students](https://www.dreamspark.com/Product/Product.aspx?productid=72)
 
-You could also get Visual Studio 2013, which is being released in December. The same links have something of the sort.
+~~You could also get Visual Studio 2013, which is being released in December. The same links have something of the sort.~~ Just get the 2013 version of Visual Studio, and don't bother with 2012. Web Essentials doesn't play nice with VS2012.
 
 Once you download the project, you'll want to verify SlitherLogic -> Properties -> Web -> Start Action is set to `game.html`. It should already be set, but this is nice to have.
 
