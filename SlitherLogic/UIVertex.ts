@@ -1,0 +1,32 @@
+/// <reference path="lib\jquery.d.ts" />
+/// <reference path="lib\kinetic.d.ts" />
+
+class UIVertex {
+  static radius = 7;
+  static yesColor = 'white';
+  static noColor = 'red';
+
+  vertex: Vertex;
+  p: Point;
+  shape: Kinetic.Circle;
+
+  constructor(o) {
+    this.shape = new Kinetic.Circle({
+      radius: UIVertex.radius,
+    });
+    Game.layer.add(this.shape);
+    this.shape.setZIndex(1);
+
+    this.p = Point.from(o);
+    this.vertex = new Vertex(() => {
+      this.shape.setFill(this.vertex.valid() ? UIVertex.yesColor : UIVertex.noColor);
+    });
+
+    this.vertex.updateUI();
+  }
+
+  reposition() {
+    var draw = Game.getVirtualPoint(this.p);
+    this.shape.setPosition(draw.x, draw.y);
+  }
+}
