@@ -270,6 +270,7 @@ class Game {
 
   static loadPuzzle(url: string) {
     $.get(url, hints => { //TODO#1 strip hints of newlines
+      hints = hints.replace(/[\r\n]/g, "");
       for (var i = 0; i < hints.length; ++i)
         Game.hints['h' + i].setNum(hints.charAt(i)); 
       Game.layer.draw();
