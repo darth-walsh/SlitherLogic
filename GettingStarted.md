@@ -17,6 +17,8 @@ You'll need some version of Visual Studio:
 
 ~~You could also get Visual Studio 2013, which is being released in December. The same links have something of the sort.~~ Just get the 2013 version of Visual Studio, and don't bother with 2012. Web Essentials doesn't play nice with VS2012.
 
+You're probably only going to want one Git client on you computer. You can use the GitHub client, or you can use the Visual Studio client. If something is going wrong with one of them, make sure the other one is completely turned off. (Visual Studio 2013 will start up Git by itself, I've found.)
+
 Once you download the project, you'll want to verify SlitherLogic -> Properties -> Web -> Start Action is set to `game.html`. It should already be set, but this is nice to have.
 
 I've found when running the game, it takes a long time to build when you run debug, and a long time to start in the browser after that. Normally I start without debugging. (I don't believe debugging would do anything, as there isn't any code running on the server. It's all in your browser!)
