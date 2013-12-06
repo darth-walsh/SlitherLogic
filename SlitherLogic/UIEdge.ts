@@ -23,13 +23,13 @@ class UIEdge {
 
     this.shape.on('click', (...evts: MouseEvent[]) => {
       var evt = evts[0];
-      if (evt.which == 2) // middle
+      if (evt.which === 2) // middle
         return;
 
       if (this.edge.selected !== null)
         this.edge.selected = null;
       else
-        this.edge.selected = evt.which == 1; // left
+        this.edge.selected = evt.which === 1; // left
 
       return {};
     });
