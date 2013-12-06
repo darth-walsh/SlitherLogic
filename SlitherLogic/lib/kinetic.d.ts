@@ -230,7 +230,7 @@ declare module Kinetic {
     setDashArray(dashArray);
     setDashArrayEnabled(enabled: boolean);
     setLineCap(lineCap: string);
-    setPoints(can: Array);
+    setPoints(can: any[]);
   }
 
   class Path extends Shape {
