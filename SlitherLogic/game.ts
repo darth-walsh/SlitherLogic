@@ -19,8 +19,8 @@ class Point {
 }
 
 class Game {
-  static puzzleUL: Point;
-  static puzzleLR: Point;
+  static puzzleTL: Point;
+  static puzzleBR: Point;
   static vertices: { [name: string]: UIVertex; };
   static edges: { [name: string]: UIEdge; };
   static hints: { [name: string]: UIHint; };
@@ -70,12 +70,16 @@ class Game {
     Game.edges = {};
     Game.hints = {};
 
-    Game.puzzleUL = new Point();
-    Game.puzzleLR = new Point();
+    Game.puzzleTL = new Point();
+    Game.puzzleBR = new Point(-1e4, -1e4);
 
     $.getJSON(url).then(function (level) {
       for (var v in level.vertices) {
         Game.vertices[v] = new UIVertex(level.vertices[v]);
+        Game.puzzleTL.x = Math.min(Game.puzzleTL.x, Game.vertices[v].p.x);
+        Game.puzzleTL.y = Math.min(Game.puzzleTL.y, Game.vertices[v].p.y);
+        Game.puzzleBR.x = Math.max(Game.puzzleBR.x, Game.vertices[v].p.x);
+        Game.puzzleBR.y = Math.max(Game.puzzleBR.y, Game.vertices[v].p.y);
       }//TODO#9 fail case
 
       for (var e in level.edges) {
@@ -121,10 +125,11 @@ class Game {
   }
 
   static resize() {
-    $('#container').css('height', window.innerHeight - 20);
+    var container = $('#container');
+    container.css('height', window.innerHeight - 20);
 
-    Game.stage.setWidth($('#container').width());
-    Game.stage.setHeight($('#container').height());
+    Game.stage.setWidth(container.width());
+    Game.stage.setHeight(container.height());
 
     //TODO#10 use Game.ios||android
 
@@ -157,8 +162,12 @@ class Game {
   //  window.setTimeout(() => window.scrollTo(0, 1), 1);
   //}
 
+  static margin = 50;
   static getVirtualPoint(p: Point): Point {
-    return new Point(p.x * 30 + 60, p.y * 30 + 60); //TODO#11 variable size logic
+    var xRatio = (Game.stage.getWidth() - 2 * Game.margin) / (Game.puzzleBR.x - Game.puzzleTL.x);
+    var yRatio = (Game.stage.getHeight() - 2 * Game.margin) / (Game.puzzleBR.y - Game.puzzleTL.y);
+
+    return new Point(Math.floor(p.x * xRatio) + Game.margin, Math.floor(p.y * yRatio) + Game.margin);
   }
 
   static loop() {
