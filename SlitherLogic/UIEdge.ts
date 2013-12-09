@@ -33,6 +33,7 @@ class UIEdge {
       }
     });
 
+    //TODO#6 handle tap, and add dblclick dbltap logic that works?
     this.shape.on('click', (...evts: MouseEvent[]) => {
       var evt = evts[0];
       if (evt.which === 2) // middle
