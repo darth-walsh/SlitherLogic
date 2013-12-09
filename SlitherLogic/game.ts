@@ -13,7 +13,7 @@ class Point {
   scaled(s: number): Point {
     return new Point(this.x * s, this.y * s);
   }
-  add(p: Point): Point{
+  add(p: Point): Point {
     return new Point(this.x + p.x, this.y + p.y);
   }
 }
