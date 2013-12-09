@@ -28,7 +28,7 @@ class UIHint {
     Game.layer.add(this.text);
 
     this.hint = new Hint(es.map(e => e.edge), () => {
-      this.text.setFill(this.hint.valid() ? UIHint.yesColor : UIHint.noColor);
+      this.text.setFill(this.hint.valid() !== false ? UIHint.yesColor : UIHint.noColor);
     });
   }
 

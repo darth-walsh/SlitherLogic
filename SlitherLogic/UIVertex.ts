@@ -19,7 +19,7 @@ class UIVertex {
 
     this.p = Point.from(o);
     this.vertex = new Vertex(() => {
-      this.shape.setFill(this.vertex.valid() ? UIVertex.yesColor : UIVertex.noColor);
+      this.shape.setFill(this.vertex.valid() !== false ? UIVertex.yesColor : UIVertex.noColor);
     });
 
     this.vertex.updateUI();
