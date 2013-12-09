@@ -70,7 +70,7 @@ class Game {
     Game.edges = {};
     Game.hints = {};
 
-    Game.puzzleTL = new Point();
+    Game.puzzleTL = new Point( 1e4,  1e4);
     Game.puzzleBR = new Point(-1e4, -1e4);
 
     $.getJSON(url).then(function (level) {
@@ -167,7 +167,10 @@ class Game {
     var xRatio = (Game.stage.getWidth() - 2 * Game.margin) / (Game.puzzleBR.x - Game.puzzleTL.x);
     var yRatio = (Game.stage.getHeight() - 2 * Game.margin) / (Game.puzzleBR.y - Game.puzzleTL.y);
 
-    return new Point(Math.floor(p.x * xRatio) + Game.margin, Math.floor(p.y * yRatio) + Game.margin);
+    var ratio = Math.min(xRatio, yRatio);
+
+    return new Point(Math.floor((p.x - Game.puzzleTL.x) * ratio) + Game.margin,
+                     Math.floor((p.y - Game.puzzleTL.y) * ratio) + Game.margin);
   }
 
   static loop() {
