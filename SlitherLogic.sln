@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlitherLogic", "SlitherLogic\SlitherLogic.csproj", "{5F2541F5-40EC-47E0-8AE9-5DF9E3AA6FB0}"
 EndProject
 Global
