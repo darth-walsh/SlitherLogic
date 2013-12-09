@@ -5,6 +5,7 @@ class UIEdge {
   static yesWidth = 5;
   static noWidth = 2;
   static unWidth = 3;
+  static hitWidth = 15;
 
   yesColor: string;
   static noColor = '#222';
@@ -14,12 +15,23 @@ class UIEdge {
   edge: Edge;
 
   constructor(private v1: UIVertex, private v2: UIVertex) {
+    var thisEdge = this;
     this.shape = new Kinetic.Line({
       points: [0, 0],
       lineCap: 'round',
-      dashArray: [1, UIEdge.unWidth * 2]
+      dashArray: [1, UIEdge.unWidth * 2],
+      //http://stackoverflow.com/a/17746563/771768
+      drawHitFunc: function (context) {
+        context.beginPath();
+        var draw1 = Game.getVirtualPoint(thisEdge.v1.p);
+        var draw2 = Game.getVirtualPoint(thisEdge.v2.p);
+        context.moveTo(draw1.x, draw1.y);
+        context.lineTo(draw2.x, draw2.y);
+        this.setStrokeWidth(UIEdge.hitWidth);
+        context.fillStrokeShape(this);
+        this.setStrokeWidth(thisEdge.strokeWidth);
+      }
     });
-    //TODO#3 hit region
 
     this.shape.on('click', (...evts: MouseEvent[]) => {
       var evt = evts[0];
@@ -42,22 +54,31 @@ class UIEdge {
         case true:
           this.shape.setDashArrayEnabled(false);
           this.shape.setStroke(this.yesColor);
-          this.shape.setStrokeWidth(UIEdge.yesWidth);
           break;
         case false:
           this.shape.setDashArrayEnabled(false);
           this.shape.setStroke(UIEdge.noColor);
-          this.shape.setStrokeWidth(UIEdge.noWidth);
           break;
         case null:
           this.shape.setDashArrayEnabled(true);
           this.shape.setStroke(UIEdge.unColor);
-          this.shape.setStrokeWidth(UIEdge.unWidth);
           break;
       }
+      this.shape.setStrokeWidth(this.strokeWidth);
       Game.layer.draw(); //TODO#4 figure out better draw?
     });
     this.edge.updateUI();
+  }
+
+  get strokeWidth(): number {
+    switch (this.edge.selected) {
+      case true:
+        return UIEdge.yesWidth;
+      case false:
+        return UIEdge.noWidth;
+      case null:
+        return UIEdge.unWidth;
+    }
   }
 
   reposition() {
