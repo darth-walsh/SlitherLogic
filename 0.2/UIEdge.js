@@ -1,12 +1,23 @@
-var UIEdge = (function () {
+﻿var UIEdge = (function () {
     function UIEdge(v1, v2) {
         var _this = this;
         this.v1 = v1;
         this.v2 = v2;
+        var thisEdge = this;
         this.shape = new Kinetic.Line({
             points: [0, 0],
             lineCap: 'round',
-            dashArray: [1, UIEdge.unWidth * 2]
+            dashArray: [1, UIEdge.unWidth * 2],
+            drawHitFunc: function (context) {
+                context.beginPath();
+                var draw1 = Game.getVirtualPoint(thisEdge.v1.p);
+                var draw2 = Game.getVirtualPoint(thisEdge.v2.p);
+                context.moveTo(draw1.x, draw1.y);
+                context.lineTo(draw2.x, draw2.y);
+                this.setStrokeWidth(UIEdge.hitWidth);
+                context.fillStrokeShape(this);
+                this.setStrokeWidth(thisEdge.strokeWidth);
+            }
         });
 
         this.shape.on('click', function () {
@@ -34,23 +45,36 @@ var UIEdge = (function () {
                 case true:
                     _this.shape.setDashArrayEnabled(false);
                     _this.shape.setStroke(_this.yesColor);
-                    _this.shape.setStrokeWidth(UIEdge.yesWidth);
                     break;
                 case false:
                     _this.shape.setDashArrayEnabled(false);
                     _this.shape.setStroke(UIEdge.noColor);
-                    _this.shape.setStrokeWidth(UIEdge.noWidth);
                     break;
                 case null:
                     _this.shape.setDashArrayEnabled(true);
                     _this.shape.setStroke(UIEdge.unColor);
-                    _this.shape.setStrokeWidth(UIEdge.unWidth);
                     break;
             }
+            _this.shape.setStrokeWidth(_this.strokeWidth);
             Game.layer.draw();
         });
         this.edge.updateUI();
     }
+    Object.defineProperty(UIEdge.prototype, "strokeWidth", {
+        get: function () {
+            switch (this.edge.selected) {
+                case true:
+                    return UIEdge.yesWidth;
+                case false:
+                    return UIEdge.noWidth;
+                case null:
+                    return UIEdge.unWidth;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     UIEdge.prototype.reposition = function () {
         var draw1 = Game.getVirtualPoint(this.v1.p);
         var draw2 = Game.getVirtualPoint(this.v2.p);
@@ -92,6 +116,7 @@ var UIEdge = (function () {
     UIEdge.yesWidth = 5;
     UIEdge.noWidth = 2;
     UIEdge.unWidth = 3;
+    UIEdge.hitWidth = 15;
 
     UIEdge.noColor = '#222';
     UIEdge.unColor = 'white';

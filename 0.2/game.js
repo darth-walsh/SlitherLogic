@@ -1,4 +1,4 @@
-﻿
+
 var Point = (function () {
     function Point(x, y) {
         if (typeof x === "undefined") { x = 0; }
@@ -49,7 +49,7 @@ var Game = (function () {
             height: window.innerHeight
         });
 
-        Game.loadLevel('data/test/level.json');
+        Game.loadLevel('data/square_7_7/level.json');
     };
 
     Game.loadLevel = function (url) {
@@ -60,7 +60,7 @@ var Game = (function () {
         Game.edges = {};
         Game.hints = {};
 
-        Game.puzzleTL = new Point();
+        Game.puzzleTL = new Point(1e4, 1e4);
         Game.puzzleBR = new Point(-1e4, -1e4);
 
         $.getJSON(url).then(function (level) {
@@ -84,7 +84,7 @@ var Game = (function () {
                 }));
             }
 
-            Game.loadPuzzle('data/test/1.txt');
+            Game.loadPuzzle('data/square_7_7/1.txt');
 
             Game.resize();
         });
@@ -138,7 +138,9 @@ var Game = (function () {
         var xRatio = (Game.stage.getWidth() - 2 * Game.margin) / (Game.puzzleBR.x - Game.puzzleTL.x);
         var yRatio = (Game.stage.getHeight() - 2 * Game.margin) / (Game.puzzleBR.y - Game.puzzleTL.y);
 
-        return new Point(Math.floor(p.x * xRatio) + Game.margin, Math.floor(p.y * yRatio) + Game.margin);
+        var ratio = Math.min(xRatio, yRatio);
+
+        return new Point(Math.floor((p.x - Game.puzzleTL.x) * ratio) + Game.margin, Math.floor((p.y - Game.puzzleTL.y) * ratio) + Game.margin);
     };
 
     Game.loop = function () {
@@ -155,4 +157,3 @@ window.addEventListener('resize', Game.onResize, false);
 window.addEventListener('contextmenu', function (event) {
     event.preventDefault();
 });
-;
