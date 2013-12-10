@@ -7,14 +7,19 @@ class UIEdge {
   static unWidth = 3;
   static hitWidth = 15;
 
-  yesColor: string;
+  get yesColor(): string {
+    // 24 steps is nice, but we want to avoid steps 0,1,2,22,23 because they are too red
+    // Generate a number ranged 0 - 18 and add 3
+    var step = (this.edge.id * 3 ) % 19
+    return UIEdge.rainbow(24, step + 3);
+  }
   static noColor = '#222';
   static unColor = 'white';
 
   shape: Kinetic.Line;
   edge: Edge;
 
-  constructor(private v1: UIVertex, private v2: UIVertex) {
+  constructor(public name: String, private v1: UIVertex, private v2: UIVertex) {
     var thisEdge = this;
     this.shape = new Kinetic.Line({
       points: [0, 0],
@@ -44,13 +49,13 @@ class UIEdge {
       else
         this.edge.selected = evt.which === 1; // left
 
+      Game.layer.draw();
       return {};
     });
     Game.layer.add(this.shape);
     this.shape.setZIndex(0);
 
-    this.yesColor = UIEdge.getRandomColor();
-    this.edge = new Edge(v1.vertex, v2.vertex, () => {
+    this.edge = new Edge(this.name, v1.vertex, v2.vertex, () => {
       switch (this.edge.selected) {
         case true:
           this.shape.setDashArrayEnabled(false);
@@ -66,7 +71,6 @@ class UIEdge {
           break;
       }
       this.shape.setStrokeWidth(this.strokeWidth);
-      Game.layer.draw(); //TODO#4 figure out better draw?
     });
     this.edge.updateUI();
   }
@@ -86,12 +90,6 @@ class UIEdge {
     var draw1 = Game.getVirtualPoint(this.v1.p);
     var draw2 = Game.getVirtualPoint(this.v2.p);
     this.shape.setPoints([draw1.x, draw1.y, draw2.x, draw2.y]);
-  }
-
-  static getRandomColor(): string {
-    //return UIEdge.rainbow(36, Math.floor(Math.random() * 36));
-    return 'blue'; //TODO#5 color stuff the color of adjacent lines
-    //return '#' + Math.floor(Math.random() * 16777215).toString(16);
   }
 
   // http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html

@@ -14,7 +14,7 @@ class UIHint {
   text: Kinetic.Text = null;
   hint: Hint;
 
-  constructor(p, es: Array<UIEdge>) {
+  constructor(public name: String, p, es: Array<UIEdge>) {
     this.p = Point.from(p);
     this.drawSize = new Point();
 
@@ -27,7 +27,7 @@ class UIHint {
 
     Game.layer.add(this.text);
 
-    this.hint = new Hint(es.map(e => e.edge), () => {
+    this.hint = new Hint(this.name, es.map(e => e.edge), () => {
       this.text.setFill(this.hint.valid() !== false ? UIHint.yesColor : UIHint.noColor);
     });
   }

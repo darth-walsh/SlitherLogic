@@ -10,7 +10,7 @@ class UIVertex {
   p: Point;
   shape: Kinetic.Circle;
 
-  constructor(o) {
+  constructor(public name: String, o) {
     this.shape = new Kinetic.Circle({
       radius: UIVertex.radius,
     });
@@ -18,7 +18,7 @@ class UIVertex {
     this.shape.setZIndex(1);
 
     this.p = Point.from(o);
-    this.vertex = new Vertex(() => {
+    this.vertex = new Vertex(this.name, () => {
       this.shape.setFill(this.vertex.valid() !== false ? UIVertex.yesColor : UIVertex.noColor);
     });
 
