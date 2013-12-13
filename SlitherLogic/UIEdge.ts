@@ -19,7 +19,7 @@ class UIEdge {
   shape: Kinetic.Line;
   edge: Edge;
 
-  constructor(public name: String, private v1: UIVertex, private v2: UIVertex) {
+  constructor(public name: string, private v1: UIVertex, private v2: UIVertex) {
     var thisEdge = this;
     this.shape = new Kinetic.Line({
       points: [0, 0],

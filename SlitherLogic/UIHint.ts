@@ -14,7 +14,7 @@ class UIHint {
   text: Kinetic.Text = null;
   hint: Hint;
 
-  constructor(public name: String, p, es: Array<UIEdge>) {
+  constructor(public name: string, p, es: Array<UIEdge>) {
     this.p = Point.from(p);
     this.drawSize = new Point();
 

@@ -10,7 +10,7 @@ class UIVertex {
   p: Point;
   shape: Kinetic.Circle;
 
-  constructor(public name: String, o) {
+  constructor(public name: string, o) {
     this.shape = new Kinetic.Circle({
       radius: UIVertex.radius,
     });
