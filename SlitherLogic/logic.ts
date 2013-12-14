@@ -75,40 +75,42 @@ class Edge implements LogicElement {
     if (this._selected === newSelected)
       return;
 
-    var v1Edges: { [name: string]: Edge } = {};
-    this.allConnectedSearch(this.v2, v1Edges);
-    var v1Count = 0;
-    var v1Id: number = null;
-    for (var key in v1Edges) {
-      ++v1Count;
-      if (!v1Id) 
-        v1Id = v1Edges[key].id;
-    }
-
-    var v2Edges: { [name: string]: Edge } = {};
-    this.allConnectedSearch(this.v1, v2Edges);
-    var v2Count = 0;
-    var v2Id: number = null;
-    for (var key in v2Edges) {
-      ++v2Count;
-      if (!v2Id)
-        v2Id = v2Edges[key].id;
-    }
-
-    if (v1Count && v2Count) {
-      var reassignV2 = v1Count > v2Count;
-      var toAssignEdges = reassignV2 ? v2Edges : v1Edges;
-      var toAssignId = newSelected === true ? (reassignV2 ? v1Id : v2Id) : Edge.uniqueId++;
-
-      this.id = toAssignId;
-      for (var key in toAssignEdges) {
-        toAssignEdges[key].id = toAssignId;
-        toAssignEdges[key].updateUI();
+    if (this._selected || newSelected) { // skip false <-> null
+      var v1Edges: { [name: string]: Edge } = {};
+      this.allConnectedSearch(this.v2, v1Edges);
+      var v1Count = 0;
+      var v1Id: number = null;
+      for (var key in v1Edges) {
+        ++v1Count;
+        if (!v1Id)
+          v1Id = v1Edges[key].id;
       }
-    } else if (newSelected === true) {
-      this.id = v1Id || v2Id;
-      if(this.id === null)
-        this.id = Edge.uniqueId++;
+
+      var v2Edges: { [name: string]: Edge } = {};
+      this.allConnectedSearch(this.v1, v2Edges);
+      var v2Count = 0;
+      var v2Id: number = null;
+      for (var key in v2Edges) {
+        ++v2Count;
+        if (!v2Id)
+          v2Id = v2Edges[key].id;
+      }
+
+      if (v1Count && v2Count) {
+        var reassignV2 = v1Count > v2Count;
+        var toAssignEdges = reassignV2 ? v2Edges : v1Edges;
+        var toAssignId = newSelected === true ? (reassignV2 ? v1Id : v2Id) : Edge.uniqueId++;
+
+        this.id = toAssignId;
+        for (var key in toAssignEdges) {
+          toAssignEdges[key].id = toAssignId;
+          toAssignEdges[key].updateUI();
+        }
+      } else if (newSelected === true) {
+        this.id = v1Id || v2Id;
+        if (this.id === null)
+          this.id = Edge.uniqueId++;
+      }
     }
     
     var oldSelected = this._selected;
@@ -179,20 +181,34 @@ class Logic {
   static Known() {
     --Logic.unknown;
 
+    var loopId = null;
+    
     if (Logic.unknown === 0) {
       var done = true;
-      for (var i = 0; i < Logic.vertices.length; ++i)
+      for (var i = 0; i < Logic.vertices.length && done; ++i)
         if (Logic.vertices[i].valid() !== true)
           done = false;
-      for (var i = 0; i < Logic.edges.length; ++i)
-        if (Logic.edges[i].valid() !== true)
+
+      for (var i = 0; i < Logic.edges.length; ++i) {
+        var edge = Logic.edges[i]
+        if (edge.valid() !== true)
           done = false; //TODO#13 harden so we feel comfortable this won't happen
-      for (var i = 0; i < Logic.hints.length; ++i)
+        if (edge.selected)
+          if (edge.id !== loopId)
+            if (loopId === null)
+              loopId = edge.id;
+            else
+              done = false;
+      }
+
+      for (var i = 0; i < Logic.hints.length && done; ++i)
         if (Logic.hints[i].valid() !== true)
           done = false;
 
-      if (done)
+      if (done) {
+        Game.layer.draw();
         alert('You win!');
+      }
     }
   }
 
