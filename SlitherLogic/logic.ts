@@ -47,7 +47,7 @@ class Vertex implements LogicElement {
       }
     }
     var possible = yesCount <= 2 && !(yesCount === 1 && unCount === 0);
-    if (unCount === 0 && possible)
+    if (unCount !== 0 && possible)
       return null;
     return possible;
   }
@@ -164,7 +164,7 @@ class Hint implements LogicElement {
       }
     }
     var possible = yesCount <= this.num && this.num <= yesCount + unCount;
-    if (unCount === 0 && possible)
+    if (unCount !== 0 && possible)
       return null;
     return possible;
   }
