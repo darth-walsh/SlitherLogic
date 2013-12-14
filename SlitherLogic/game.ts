@@ -93,7 +93,7 @@ class Game {
       }
 
       //TODO#8 persist which puzzles the user has finished
-      Game.loadPuzzle('data/square_7_7/1.txt');
+      Game.loadPuzzle('data/square_7_7/2.txt');
 
       //Game.loop(); //TODO#12 delete?
       Game.resize();
