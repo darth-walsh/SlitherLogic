@@ -66,6 +66,7 @@ publish
 
 # Others
 [Bb]in
+webbin
 [Oo]bj
 sql
 TestResults
