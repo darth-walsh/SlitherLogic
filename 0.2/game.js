@@ -84,7 +84,7 @@ var Game = (function () {
                 }));
             }
 
-            Game.loadPuzzle('data/square_7_7/2.txt');
+            Game.loadPuzzle('data/square_7_7/1.txt');
 
             Game.resize();
         });
