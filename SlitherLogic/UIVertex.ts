@@ -2,7 +2,7 @@
 /// <reference path="lib\kinetic.d.ts" />
 
 class UIVertex {
-  static radius = 7;
+  static radius = 5;
   static yesColor = 'white';
   static noColor = 'red';
 

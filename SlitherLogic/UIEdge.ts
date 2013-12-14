@@ -4,8 +4,8 @@
 class UIEdge {
   static yesWidth = 5;
   static noWidth = 2;
-  static unWidth = 3;
-  static hitWidth = 15;
+  static unWidth = 2;
+  static hitWidth = 25;
 
   get yesColor(): string {
     // 24 steps is nice, but we want to avoid steps 0,1,2,22,23 because they are too red
@@ -24,7 +24,7 @@ class UIEdge {
     this.shape = new Kinetic.Line({
       points: [0, 0],
       lineCap: 'round',
-      dashArray: [1, UIEdge.unWidth * 2],
+      dashArray: [1, UIEdge.unWidth * 4],
       //http://stackoverflow.com/a/17746563/771768
       drawHitFunc: function (context) {
         context.beginPath();
