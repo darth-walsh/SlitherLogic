@@ -65,7 +65,7 @@ var Game = (function () {
 
         $.getJSON(url).then(function (level) {
             for (var v in level.vertices) {
-                Game.vertices[v] = new UIVertex(level.vertices[v]);
+                Game.vertices[v] = new UIVertex(v, level.vertices[v]);
                 Game.puzzleTL.x = Math.min(Game.puzzleTL.x, Game.vertices[v].p.x);
                 Game.puzzleTL.y = Math.min(Game.puzzleTL.y, Game.vertices[v].p.y);
                 Game.puzzleBR.x = Math.max(Game.puzzleBR.x, Game.vertices[v].p.x);
@@ -74,12 +74,12 @@ var Game = (function () {
 
             for (var e in level.edges) {
                 var edge = level.edges[e];
-                Game.edges[e] = new UIEdge(Game.vertices[edge[0]], Game.vertices[edge[1]]);
+                Game.edges[e] = new UIEdge(e, Game.vertices[edge[0]], Game.vertices[edge[1]]);
             }
 
             for (var h in level.hints) {
                 var hint = level.hints[h];
-                Game.hints[h] = new UIHint(hint.position, hint.edges.map(function (e) {
+                Game.hints[h] = new UIHint(h, hint.position, hint.edges.map(function (e) {
                     return Game.edges[e];
                 }));
             }

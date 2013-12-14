@@ -1,13 +1,14 @@
-﻿var UIEdge = (function () {
-    function UIEdge(v1, v2) {
+var UIEdge = (function () {
+    function UIEdge(name, v1, v2) {
         var _this = this;
+        this.name = name;
         this.v1 = v1;
         this.v2 = v2;
         var thisEdge = this;
         this.shape = new Kinetic.Line({
             points: [0, 0],
             lineCap: 'round',
-            dashArray: [1, UIEdge.unWidth * 2],
+            dashArray: [1, UIEdge.unWidth * 4],
             drawHitFunc: function (context) {
                 context.beginPath();
                 var draw1 = Game.getVirtualPoint(thisEdge.v1.p);
@@ -34,13 +35,13 @@
             else
                 _this.edge.selected = evt.which === 1;
 
+            Game.layer.draw();
             return {};
         });
         Game.layer.add(this.shape);
         this.shape.setZIndex(0);
 
-        this.yesColor = UIEdge.getRandomColor();
-        this.edge = new Edge(v1.vertex, v2.vertex, function () {
+        this.edge = new Edge(this.name, v1.vertex, v2.vertex, function () {
             switch (_this.edge.selected) {
                 case true:
                     _this.shape.setDashArrayEnabled(false);
@@ -56,10 +57,18 @@
                     break;
             }
             _this.shape.setStrokeWidth(_this.strokeWidth);
-            Game.layer.draw();
         });
         this.edge.updateUI();
     }
+    Object.defineProperty(UIEdge.prototype, "yesColor", {
+        get: function () {
+            var step = (this.edge.id * 3) % 19;
+            return UIEdge.rainbow(24, step + 3);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     Object.defineProperty(UIEdge.prototype, "strokeWidth", {
         get: function () {
             switch (this.edge.selected) {
@@ -79,10 +88,6 @@
         var draw1 = Game.getVirtualPoint(this.v1.p);
         var draw2 = Game.getVirtualPoint(this.v2.p);
         this.shape.setPoints([draw1.x, draw1.y, draw2.x, draw2.y]);
-    };
-
-    UIEdge.getRandomColor = function () {
-        return 'blue';
     };
 
     UIEdge.rainbow = function (numOfSteps, step) {
@@ -115,8 +120,8 @@
     };
     UIEdge.yesWidth = 5;
     UIEdge.noWidth = 2;
-    UIEdge.unWidth = 3;
-    UIEdge.hitWidth = 15;
+    UIEdge.unWidth = 2;
+    UIEdge.hitWidth = 25;
 
     UIEdge.noColor = '#222';
     UIEdge.unColor = 'white';

@@ -1,6 +1,7 @@
 var UIHint = (function () {
-    function UIHint(p, es) {
+    function UIHint(name, p, es) {
         var _this = this;
+        this.name = name;
         this.text = null;
         this.p = Point.from(p);
         this.drawSize = new Point();
@@ -14,10 +15,10 @@ var UIHint = (function () {
 
         Game.layer.add(this.text);
 
-        this.hint = new Hint(es.map(function (e) {
+        this.hint = new Hint(this.name, es.map(function (e) {
             return e.edge;
         }), function () {
-            _this.text.setFill(_this.hint.valid() ? UIHint.yesColor : UIHint.noColor);
+            _this.text.setFill(_this.hint.valid() !== false ? UIHint.yesColor : UIHint.noColor);
         });
     }
     UIHint.prototype.setNum = function (s) {
