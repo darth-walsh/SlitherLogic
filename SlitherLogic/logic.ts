@@ -98,29 +98,18 @@ class Edge implements LogicElement {
     if (v1Count && v2Count) {
       var reassignV2 = v1Count > v2Count;
       var toAssignEdges = reassignV2 ? v2Edges : v1Edges;
-      if (newSelected === true) {
-        this.id = reassignV2 ? v1Id : v2Id;
-        if (v1Id === v2Id) { //just created a loop
-          //TODO did you win or not?
-        } else {
-          for (var key in toAssignEdges) {
-            toAssignEdges[key].id = this.id;
-            toAssignEdges[key].updateUI();
-          }
-        }
-      } else {
-        var toAssignId = Edge.uniqueId++;
-        for (var key in toAssignEdges) { //TODO refactor into above code?
-          toAssignEdges[key].id = toAssignId;
-          toAssignEdges[key].updateUI();
-        }
+      var toAssignId = newSelected === true ? (reassignV2 ? v1Id : v2Id) : Edge.uniqueId++;
+
+      this.id = toAssignId;
+      for (var key in toAssignEdges) {
+        toAssignEdges[key].id = toAssignId;
+        toAssignEdges[key].updateUI();
       }
     } else if (newSelected === true) {
       this.id = v1Id || v2Id;
       if(this.id === null)
         this.id = Edge.uniqueId++;
     }
-    //TODO#5 if a fork has become valid, fix up IDs
     
     var oldSelected = this._selected;
     this._selected = newSelected;
