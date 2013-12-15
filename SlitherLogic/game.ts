@@ -73,14 +73,14 @@ class Game {
     Game.puzzleTL = new Point( 1e4,  1e4);
     Game.puzzleBR = new Point(-1e4, -1e4);
 
-    $.getJSON(url).then(function (level) {
+    $.getJSON(url, level => {
       for (var v in level.vertices) {
         Game.vertices[v] = new UIVertex(v, level.vertices[v]);
         Game.puzzleTL.x = Math.min(Game.puzzleTL.x, Game.vertices[v].p.x);
         Game.puzzleTL.y = Math.min(Game.puzzleTL.y, Game.vertices[v].p.y);
         Game.puzzleBR.x = Math.max(Game.puzzleBR.x, Game.vertices[v].p.x);
         Game.puzzleBR.y = Math.max(Game.puzzleBR.y, Game.vertices[v].p.y);
-      }//TODO#9 fail case
+      }
 
       for (var e in level.edges) {
         var edge = level.edges[e];
@@ -93,20 +93,22 @@ class Game {
       }
 
       //TODO#8 persist which puzzles the user has finished
-      Game.loadPuzzle('data/square_7_7/1.txt');
+      Game.loadPuzzle('data/square_7_7/2.txt');
 
       //Game.loop(); //TODO#12 delete?
       Game.resize();
-    });
+    }).fail(() =>
+        alert("Can't load " + url + ", sorry."));
   }
 
   static loadPuzzle(url: string) {
     $.get(url, hints => { //TODO#1 strip hints of newlines
       hints = hints.replace(/[\r\n]/g, "");
       for (var i = 0; i < hints.length; ++i)
-        Game.hints['h' + i].setNum(hints.charAt(i)); 
+        Game.hints['h' + i].setNum(hints.charAt(i));
       Game.layer.draw();
-    }); //TODO#9 fail case
+    }).fail(() =>
+        alert("Can't load " + url + ", sorry."));
   }
 
   static resizing: boolean = false;
