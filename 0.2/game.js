@@ -63,7 +63,7 @@ var Game = (function () {
         Game.puzzleTL = new Point(1e4, 1e4);
         Game.puzzleBR = new Point(-1e4, -1e4);
 
-        $.getJSON(url).then(function (level) {
+        $.getJSON(url, function (level) {
             for (var v in level.vertices) {
                 Game.vertices[v] = new UIVertex(v, level.vertices[v]);
                 Game.puzzleTL.x = Math.min(Game.puzzleTL.x, Game.vertices[v].p.x);
@@ -84,9 +84,11 @@ var Game = (function () {
                 }));
             }
 
-            Game.loadPuzzle('data/square_7_7/1.txt');
+            Game.loadPuzzle('data/square_7_7/2.txt');
 
             Game.resize();
+        }).fail(function () {
+            return alert("Can't load " + url + ", sorry.");
         });
     };
 
@@ -96,6 +98,8 @@ var Game = (function () {
             for (var i = 0; i < hints.length; ++i)
                 Game.hints['h' + i].setNum(hints.charAt(i));
             Game.layer.draw();
+        }).fail(function () {
+            return alert("Can't load " + url + ", sorry.");
         });
     };
 
