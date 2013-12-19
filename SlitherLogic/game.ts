@@ -58,7 +58,7 @@ class Game {
       height: window.innerHeight
     });
 
-    Game.loadLevel('data/square_7_7/level.json');
+    Game.loadLevel('data/hex/level.json');
   }
 
   static loadLevel(url: string) {
@@ -93,7 +93,7 @@ class Game {
       }
 
       //TODO#8 persist which puzzles the user has finished
-      Game.loadPuzzle('data/square_7_7/2.txt');
+      Game.loadPuzzle('data/hex/2.txt');
 
       //Game.loop(); //TODO#12 delete?
       Game.resize();
