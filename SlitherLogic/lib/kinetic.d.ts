@@ -30,6 +30,7 @@ declare module Kinetic {
     constructor(config);
     clone(attrs): Node;
     destroy(): void;
+    fire(typesStr: string): void;
     getAbsoluteOpacity(): number;
     getAbsolutePosition(): Vector2d;
     getAbsoluteTransform(): any;
@@ -66,7 +67,7 @@ declare module Kinetic {
     moveToTop(): void;
     moveUp(): void;
     off(typesStr: string): void;
-    on(typesStr: string, handler: (evt) => {}): void;
+    on(typesStr: string, handler: (evt) => void): void;
     rotate(theta: number): void;
     rotateDeg(deg: number): void;
 
