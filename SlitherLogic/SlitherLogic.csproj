@@ -25,6 +25,7 @@
     <Content Include="data\square_7_7\1.txt" />
     <Content Include="data\square_7_7\2.txt" />
     <Content Include="data\test\1.txt" />
+    <Content Include="favicon.ico" />
     <Content Include="game.css" />
     <Content Include="game.html" />
     <Content Include="lib\jquery.d.ts" />
@@ -87,6 +88,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /s /y $(ProjectDir)data $(ProjectDir)webbin\data\
 xcopy /y $(ProjectDir)game.html $(ProjectDir)webbin
-xcopy /y $(ProjectDir)game.css $(ProjectDir)webbin</PostBuildEvent>
+xcopy /y $(ProjectDir)game.css $(ProjectDir)webbin
+xcopy /y $(ProjectDir)favicon.ico $(ProjectDir)webbin</PostBuildEvent>
   </PropertyGroup>
 </Project>
