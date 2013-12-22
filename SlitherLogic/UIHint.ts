@@ -44,6 +44,7 @@ class UIHint {
     this.drawSize.y = this.text.getTextHeight();
 
     this.reposition();
+    this.hint.updateUI();
   }
 
   reposition() {

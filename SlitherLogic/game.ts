@@ -25,11 +25,18 @@ class Game {
   static edges: { [name: string]: UIEdge; };
   static hints: { [name: string]: UIHint; };
 
+  static currentPuzzle = 2;
+  static currentLevel = 'data/square/';
+
   static android: boolean;
   static ios: boolean;
 
   static stage: Kinetic.Stage;
   static layer: Kinetic.Layer;
+
+  static menuLayer: Kinetic.Layer;
+  static newButton: Kinetic.Rect;
+  static newText: Kinetic.Text;
 
   static init() {
     var ua = navigator.userAgent.toLowerCase();
@@ -58,7 +65,47 @@ class Game {
       height: window.innerHeight
     });
 
-    Game.loadLevel('data/hex/level.json');
+    Game.menuLayer = new Kinetic.Layer();
+    Game.newButton = new Kinetic.Rect({
+      x: -50,
+      width: 100,
+      y: -25,
+      height: 50,
+      fill: 'black',
+      stroke: 'green',
+      strokeWidth: 5
+    });
+    Game.newButton.on('click', () => {
+      ++Game.currentPuzzle;
+      Game.loadPuzzle(Game.currentLevel);
+      for (var e in Game.edges)
+        Game.edges[e].reset();
+      Game.menuLayer.hide();
+      Game.layer.draw();
+    });
+    Game.newText = new Kinetic.Text({
+      text: 'New',
+      fontSize: 30,
+      fontFamily: 'Calibri',
+      fill: 'aqua'
+    });
+    Game.newText.on('click', () => Game.newButton.fire('click'));
+    Game.newText.setX(-Game.newText.getTextWidth() / 2);
+    Game.newText.setY(-Game.newText.getTextHeight() / 2);
+
+    Game.menuLayer.add(Game.newButton);
+    Game.menuLayer.add(Game.newText);
+    Game.stage.add(Game.menuLayer);
+    Game.menuLayer.setZIndex(10);
+    Game.menuLayer.hide();
+
+    Logic.onVictory = () => {
+      Game.layer.draw();
+      Game.menuLayer.show();
+      Game.menuLayer.draw();
+    };
+
+    Game.loadLevel(Game.currentLevel + 'level.json');
   }
 
   static loadLevel(url: string) {
@@ -93,7 +140,7 @@ class Game {
       }
 
       //TODO#8 persist which puzzles the user has finished
-      Game.loadPuzzle('data/hex/2.txt');
+      Game.loadPuzzle(Game.currentLevel);
 
       //Game.loop(); //TODO#12 delete?
       Game.resize();
@@ -101,7 +148,8 @@ class Game {
         alert("Can't load " + url + ", sorry."));
   }
 
-  static loadPuzzle(url: string) {
+  static loadPuzzle(folder: string) {
+    var url = folder + Game.currentPuzzle + '.txt';
     $.get(url, hints => {
       hints = hints.replace(/[\r\n]/g, "");
       for (var i = 0; i < hints.length; ++i)
@@ -132,6 +180,8 @@ class Game {
 
     Game.stage.setWidth(container.width());
     Game.stage.setHeight(container.height());
+
+    Game.menuLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
 
     //TODO#10 use Game.ios||android
 

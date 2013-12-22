@@ -175,6 +175,8 @@ class Hint implements LogicElement {
 class Logic {
   private static unknown = 0;
 
+  public static onVictory: () => void;
+
   static Unknown() {
     ++Logic.unknown;
   }
@@ -206,8 +208,7 @@ class Logic {
           done = false;
 
       if (done) {
-        Game.layer.draw();
-        alert('You win!');
+        Logic.onVictory();
       }
     }
   }

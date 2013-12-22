@@ -44,13 +44,15 @@ class UIEdge {
       if (evt.which === 2) // middle
         return;
 
+      if (Game.menuLayer.getVisible())
+        return;
+
       if (this.edge.selected !== null)
         this.edge.selected = null;
       else
         this.edge.selected = evt.which === 1; // left
 
       Game.layer.draw();
-      return {};
     });
     Game.layer.add(this.shape);
     this.shape.setZIndex(0);
@@ -90,6 +92,10 @@ class UIEdge {
     var draw1 = Game.getVirtualPoint(this.v1.p);
     var draw2 = Game.getVirtualPoint(this.v2.p);
     this.shape.setPoints([draw1.x, draw1.y, draw2.x, draw2.y]);
+  }
+
+  reset() {
+    this.edge.selected = null;
   }
 
   // http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html
