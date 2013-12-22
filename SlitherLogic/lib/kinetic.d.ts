@@ -53,6 +53,7 @@ declare module Kinetic {
     getScale(): number;
     getStage(): Stage;
     getTransform(): any;
+    getVisible(): boolean;
     getX(): number;
     getY(): number;
     getZIndex(): number;
