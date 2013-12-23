@@ -18,6 +18,8 @@ class UIEdge {
 
   shape: Kinetic.Line;
   edge: Edge;
+  hit1: Point;
+  hit2: Point;
 
   constructor(public name: string, private v1: UIVertex, private v2: UIVertex) {
     var thisEdge = this;
@@ -30,11 +32,14 @@ class UIEdge {
         context.beginPath();
         var draw1 = Game.getVirtualPoint(thisEdge.v1.p);
         var draw2 = Game.getVirtualPoint(thisEdge.v2.p);
+        var drawHit1 = Game.getVirtualPoint(thisEdge.hit1);
+        var drawHit2 = Game.getVirtualPoint(thisEdge.hit2);
         context.moveTo(draw1.x, draw1.y);
+        context.lineTo(drawHit1.x, drawHit1.y);
         context.lineTo(draw2.x, draw2.y);
-        this.setStrokeWidth(UIEdge.hitWidth);
+        context.lineTo(drawHit2.x, drawHit2.y);
+        context.lineTo(draw1.x, draw1.y);
         context.fillStrokeShape(this);
-        this.setStrokeWidth(thisEdge.strokeWidth);
       }
     });
 
@@ -96,6 +101,28 @@ class UIEdge {
 
   reset() {
     this.edge.selected = null;
+  }
+
+  setHints() {
+    var l = this.edge.hints.length
+    if (l == 0 || l > 2)
+      throw this.name + ": doesn't have 1 or 2 edges";
+
+    this.hit1 = Game.hints[this.edge.hints[0].name].p;
+    if (l === 2)
+      this.hit2 = Game.hints[this.edge.hints[1].name].p
+    else {
+      if (Game.level === 'dodec') {
+        // special case the inferred hint location to be closer
+        var x = 0.1547; // = 1/(3+2sqrt(3))
+        this.hit2 = this.v1.p.add(this.v2.p).scaled((1 + x) / 2)
+          .sub(this.hit1.scaled(x));
+      }
+      else
+        // mid = 0.5(v1 + v2)
+        // h2 = mid + (mid - h1) = v1 + v2 - h1
+        this.hit2 = this.v1.p.add(this.v2.p).sub(this.hit1);
+    }
   }
 
   // http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html

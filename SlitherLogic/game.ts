@@ -16,6 +16,9 @@ class Point {
   add(p: Point): Point {
     return new Point(this.x + p.x, this.y + p.y);
   }
+  sub(p: Point): Point {
+    return this.add(p.scaled(-1));;
+  }
 }
 
 class Game {
@@ -26,7 +29,11 @@ class Game {
   static hints: { [name: string]: UIHint; };
 
   static currentPuzzle = 2;
-  static currentLevel = 'data/square/';
+  static level = 'test';
+
+  static get levelFolder(): string {
+    return 'data/' + Game.level + '/';
+  }
 
   static android: boolean;
   static ios: boolean;
@@ -77,7 +84,7 @@ class Game {
     });
     Game.newButton.on('click', () => {
       ++Game.currentPuzzle;
-      Game.loadPuzzle(Game.currentLevel);
+      Game.loadPuzzle(Game.levelFolder);
       for (var e in Game.edges)
         Game.edges[e].reset();
       Game.menuLayer.hide();
@@ -105,7 +112,7 @@ class Game {
       Game.menuLayer.draw();
     };
 
-    Game.loadLevel(Game.currentLevel + 'level.json');
+    Game.loadLevel(Game.levelFolder + 'level.json');
   }
 
   static loadLevel(url: string) {
@@ -139,8 +146,12 @@ class Game {
         Game.hints[h] = new UIHint(h, hint.position, hint.edges.map(e => Game.edges[e]));
       }
 
+      for (var e in Game.edges) {
+        Game.edges[e].setHints();
+      }
+
       //TODO#8 persist which puzzles the user has finished
-      Game.loadPuzzle(Game.currentLevel);
+      Game.loadPuzzle(Game.levelFolder);
 
       //Game.loop(); //TODO#12 delete?
       Game.resize();
