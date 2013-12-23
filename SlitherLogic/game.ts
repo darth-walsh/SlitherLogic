@@ -29,7 +29,7 @@ class Game {
   static hints: { [name: string]: UIHint; };
 
   static currentPuzzle = 2;
-  static level = 'test';
+  static level = 'hex';
 
   static get levelFolder(): string {
     return 'data/' + Game.level + '/';
@@ -118,7 +118,8 @@ class Game {
   static loadLevel(url: string) {
     Game.layer = new Kinetic.Layer();
     Game.stage.add(Game.layer);
-
+    Game.layer.setZIndex(0);
+    
     //TODO#7 clean out circular references?
     Game.vertices = {};
     Game.edges = {};
