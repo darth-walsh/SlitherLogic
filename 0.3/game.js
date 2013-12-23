@@ -17,12 +17,24 @@ var Point = (function () {
     Point.prototype.add = function (p) {
         return new Point(this.x + p.x, this.y + p.y);
     };
+    Point.prototype.sub = function (p) {
+        return this.add(p.scaled(-1));
+        ;
+    };
     return Point;
 })();
 
 var Game = (function () {
     function Game() {
     }
+    Object.defineProperty(Game, "levelFolder", {
+        get: function () {
+            return 'data/' + Game.level + '/';
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     Game.init = function () {
         var ua = navigator.userAgent.toLowerCase();
         Game.android = ua.indexOf('android') > -1;
@@ -61,7 +73,7 @@ var Game = (function () {
         });
         Game.newButton.on('click', function () {
             ++Game.currentPuzzle;
-            Game.loadPuzzle(Game.currentLevel);
+            Game.loadPuzzle(Game.levelFolder);
             for (var e in Game.edges)
                 Game.edges[e].reset();
             Game.menuLayer.hide();
@@ -91,12 +103,13 @@ var Game = (function () {
             Game.menuLayer.draw();
         };
 
-        Game.loadLevel(Game.currentLevel + 'level.json');
+        Game.loadLevel(Game.levelFolder + 'level.json');
     };
 
     Game.loadLevel = function (url) {
         Game.layer = new Kinetic.Layer();
         Game.stage.add(Game.layer);
+        Game.layer.setZIndex(0);
 
         Game.vertices = {};
         Game.edges = {};
@@ -126,7 +139,11 @@ var Game = (function () {
                 }));
             }
 
-            Game.loadPuzzle(Game.currentLevel);
+            for (var e in Game.edges) {
+                Game.edges[e].setHints();
+            }
+
+            Game.loadPuzzle(Game.levelFolder);
 
             Game.resize();
         }).fail(function () {
@@ -196,7 +213,7 @@ var Game = (function () {
         requestAnimFrame(Game.loop);
     };
     Game.currentPuzzle = 2;
-    Game.currentLevel = 'data/square/';
+    Game.level = 'hex';
 
     Game.resizing = false;
 
