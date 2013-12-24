@@ -28,11 +28,20 @@ class Game {
   static edges: { [name: string]: UIEdge; };
   static hints: { [name: string]: UIHint; };
 
-  static currentPuzzle = 2;
-  static level = 'hex';
+  static level = 'test';
 
   static get levelFolder(): string {
     return 'data/' + Game.level + '/';
+  }
+
+  static _currentPuzzle = 0;
+  static get currentPuzzle(): number {
+    return localStorage && localStorage[Game.level] || Game._currentPuzzle;
+  }
+  static set currentPuzzle(n: number) {
+    Game._currentPuzzle = n;
+    if (localStorage)
+      localStorage[Game.level] = n;
   }
 
   static android: boolean;
@@ -167,8 +176,12 @@ class Game {
       for (var i = 0; i < hints.length; ++i)
         Game.hints['h' + i].setNum(hints.charAt(i));
       Game.layer.draw();
-    }).fail(() =>
-        alert("Can't load " + url + ", sorry."));
+    }).fail(() => {
+        if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + "level)?")) {
+          Game.currentPuzzle = 0;
+          Game.loadPuzzle(folder);
+        }
+      });
   }
 
   static resizing: boolean = false;
