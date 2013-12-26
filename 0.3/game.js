@@ -35,13 +35,25 @@ var Game = (function () {
         configurable: true
     });
 
+    Object.defineProperty(Game, "currentPuzzle", {
+        get: function () {
+            return localStorage && localStorage[Game.level] || Game._currentPuzzle;
+        },
+        set: function (n) {
+            Game._currentPuzzle = n;
+            if (localStorage)
+                localStorage[Game.level] = n;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     Game.init = function () {
         var ua = navigator.userAgent.toLowerCase();
         Game.android = ua.indexOf('android') > -1;
         Game.ios = (ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1);
 
         window.addEventListener('click', function (e) {
-            Game.onResize();
             e.preventDefault();
         }, false);
 
@@ -159,7 +171,10 @@ var Game = (function () {
                 Game.hints['h' + i].setNum(hints.charAt(i));
             Game.layer.draw();
         }).fail(function () {
-            return alert("Can't load " + url + ", sorry.");
+            if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + "level)?")) {
+                Game.currentPuzzle = 0;
+                Game.loadPuzzle(folder);
+            }
         });
     };
 
@@ -212,8 +227,9 @@ var Game = (function () {
     Game.loop = function () {
         requestAnimFrame(Game.loop);
     };
-    Game.currentPuzzle = 2;
     Game.level = 'hex';
+
+    Game._currentPuzzle = 0;
 
     Game.resizing = false;
 
