@@ -28,7 +28,7 @@ class Game {
   static edges: { [name: string]: UIEdge; };
   static hints: { [name: string]: UIHint; };
 
-  static level = 'test';
+  static level = 'hex';
 
   static get levelFolder(): string {
     return 'data/' + Game.level + '/';
@@ -60,7 +60,6 @@ class Game {
     Game.ios = (ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1);
 
     window.addEventListener('click', function (e) {
-      Game.onResize();
       e.preventDefault();
     }, false);
     //listen for touches
