@@ -57,7 +57,7 @@ class UIEdge {
       else
         this.edge.selected = evt.which === 1; // left
 
-      Game.layer.draw();
+      Game.layer.drawScene();
     });
     Game.layer.add(this.shape);
     this.shape.setZIndex(0);
