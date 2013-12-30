@@ -206,6 +206,7 @@ class Game {
     Game.stage.setHeight(container.height());
 
     Game.menuLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+    Game.layer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
 
     //TODO#10 use Game.ios||android
 
@@ -224,29 +225,15 @@ class Game {
     Game.layer.draw();
   }
 
-  //static resize() {
-  //  if (Game.android || Game.ios)
-  //    document.body.style.height = (window.innerHeight + 50) + 'px';
-
-  //  Game.canvas.style.width = Game.currentSize.width + 'px';
-  //  Game.canvas.style.height = Game.currentSize.height + 'px';
-
-  //  Game.scale = Game.currentSize.width / Game.size.width;
-  //  Game.offset.x = Game.canvas.offsetTop;
-  //  Game.offset.y = Game.canvas.offsetLeft;
-
-  //  window.setTimeout(() => window.scrollTo(0, 1), 1);
-  //}
-
-  static margin = 50;
+  static margin = 20;
   static getVirtualPoint(p: Point): Point {
     var xRatio = (Game.stage.getWidth() - 2 * Game.margin) / (Game.puzzleBR.x - Game.puzzleTL.x);
     var yRatio = (Game.stage.getHeight() - 2 * Game.margin) / (Game.puzzleBR.y - Game.puzzleTL.y);
 
     var ratio = Math.min(xRatio, yRatio);
-
-    return new Point(Math.floor((p.x - Game.puzzleTL.x) * ratio) + Game.margin,
-                     Math.floor((p.y - Game.puzzleTL.y) * ratio) + Game.margin);
+    
+    return new Point(Math.floor((p.x - (Game.puzzleBR.x + Game.puzzleTL.x) / 2) * ratio),
+                     Math.floor((p.y - (Game.puzzleBR.y + Game.puzzleTL.y) / 2) * ratio));
   }
 
   static loop() {
