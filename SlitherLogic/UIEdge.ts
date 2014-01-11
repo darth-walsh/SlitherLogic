@@ -59,18 +59,19 @@ class UIEdge {
 
       Game.layer.drawScene();
     });
-    Game.layer.add(this.shape);
-    this.shape.setZIndex(0);
-
+    Game.edgeSibs.add(this.shape);
+    
     this.edge = new Edge(this.name, v1.vertex, v2.vertex, () => {
       switch (this.edge.selected) {
         case true:
           this.shape.setDashArrayEnabled(false);
           this.shape.setStroke(this.yesColor);
+          this.shape.moveToTop();
           break;
         case false:
           this.shape.setDashArrayEnabled(false);
           this.shape.setStroke(UIEdge.noColor);
+          this.shape.moveToBottom();
           break;
         case null:
           this.shape.setDashArrayEnabled(true);

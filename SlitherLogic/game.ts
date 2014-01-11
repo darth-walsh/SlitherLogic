@@ -49,6 +49,7 @@ class Game {
 
   static stage: Kinetic.Stage;
   static layer: Kinetic.Layer;
+  static edgeSibs: Kinetic.Group;
 
   static menuLayer: Kinetic.Layer;
   static newButton: Kinetic.Rect;
@@ -111,7 +112,7 @@ class Game {
     Game.menuLayer.add(Game.newButton);
     Game.menuLayer.add(Game.newText);
     Game.stage.add(Game.menuLayer);
-    Game.menuLayer.setZIndex(10);
+    Game.menuLayer.moveToTop();
     Game.menuLayer.hide();
 
     Logic.onVictory = () => {
@@ -126,7 +127,10 @@ class Game {
   static loadLevel(url: string) {
     Game.layer = new Kinetic.Layer();
     Game.stage.add(Game.layer);
-    Game.layer.setZIndex(0);
+    Game.layer.moveToBottom();
+
+    Game.edgeSibs = new Kinetic.Group({});
+    Game.layer.add(Game.edgeSibs);
     
     //TODO#7 clean out circular references?
     Game.vertices = {};

@@ -3,7 +3,7 @@
 
 class UIVertex {
   static radius = 5;
-  static yesColor = 'white';
+  static unColor = 'white';
   static noColor = 'red';
 
   vertex: Vertex;
@@ -15,11 +15,23 @@ class UIVertex {
       radius: UIVertex.radius,
     });
     Game.layer.add(this.shape);
-    this.shape.setZIndex(1);
+    this.shape.moveToTop();
 
     this.p = Point.from(o);
     this.vertex = new Vertex(this.name, () => {
-      this.shape.setFill(this.vertex.valid() !== false ? UIVertex.yesColor : UIVertex.noColor);
+      switch (this.vertex.valid()) {
+        case true:
+          this.shape.hide();
+          break;
+        case false:
+          this.shape.setFill(UIVertex.noColor);
+          this.shape.show();
+          break;
+        case null:
+          this.shape.setFill(UIVertex.unColor);
+          this.shape.show();
+          break;
+      }
     });
 
     this.vertex.updateUI();

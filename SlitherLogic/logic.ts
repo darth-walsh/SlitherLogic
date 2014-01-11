@@ -35,6 +35,9 @@ class Vertex implements LogicElement {
   }
 
   valid(): boolean {
+    if (this.surroundings.length === 0)
+      return null;
+
     var yesCount = 0;
     var unCount = 0;
     for (var i = 0; i < this.surroundings.length; ++i) {
