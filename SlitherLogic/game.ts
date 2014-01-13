@@ -17,7 +17,7 @@ class Point {
     return new Point(this.x + p.x, this.y + p.y);
   }
   sub(p: Point): Point {
-    return this.add(p.scaled(-1));;
+    return this.add(p.scaled(-1));
   }
 }
 
