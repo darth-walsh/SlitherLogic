@@ -22,7 +22,8 @@ class UIHint {
       text: ' ',
       fontSize: UIHint.fontSize,
       fontFamily: UIHint.fontFamily,
-      fill: UIHint.yesColor
+      fill: UIHint.yesColor,
+      listening: false
     });
 
     Game.layer.add(this.text);

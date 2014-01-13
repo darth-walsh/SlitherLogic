@@ -103,9 +103,9 @@ class Game {
       text: 'New',
       fontSize: 30,
       fontFamily: 'Calibri',
-      fill: 'aqua'
+      fill: 'aqua',
+      listening: false
     });
-    Game.newText.on('click', () => Game.newButton.fire('click'));
     Game.newText.setX(-Game.newText.getTextWidth() / 2);
     Game.newText.setY(-Game.newText.getTextHeight() / 2);
 
