@@ -16,7 +16,8 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="logic.ts" />
+    <TypeScriptCompile Include="LogicElement.ts" />
+    <TypeScriptCompile Include="Logic.ts" />
     <None Include="data\square_7_7\level.json" />
     <None Include="data\test\level.json" />
     <TypeScriptCompile Include="UIVertex.ts" />
