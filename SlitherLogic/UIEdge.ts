@@ -101,10 +101,10 @@ class UIEdge {
   }
 
   reset() {
-    this.edge.selected = null;
+    this.edge.reset();
   }
 
-  setHints() {
+  setPositionFromHints() {
     var l = this.edge.hints.length
     if (l == 0 || l > 2)
       throw this.name + ": doesn't have 1 or 2 edges";

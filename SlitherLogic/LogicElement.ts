@@ -1,4 +1,6 @@
 interface LogicElement {
+  reset();
+
   // False if not possible to be logically correct
   // Null if remaining unknowns and posibly logically correct depending on how unknowns chosen
   // True if logically correct and all inputs known
@@ -32,6 +34,10 @@ class Vertex implements LogicElement {
     }
 
     return found;
+  }
+
+  reset() {
+    this.updateUI();
   }
 
   valid(): boolean {
@@ -68,7 +74,6 @@ class Edge implements LogicElement {
     v2.surroundings.push(this);
 
     Logic.edges.push(this);
-    Logic.Unknown();
   }
 
   get selected(): boolean {
@@ -77,6 +82,8 @@ class Edge implements LogicElement {
   set selected(newSelected: boolean) {
     if (this._selected === newSelected)
       return;
+
+    console.log(this.name + ": " + newSelected); //TODO remove
 
     if (this._selected || newSelected) { // skip false <-> null
       var v1Edges: { [name: string]: Edge } = {};
@@ -125,10 +132,12 @@ class Edge implements LogicElement {
       this.hints[i].updateUI();
     this.updateUI();
 
-    if (oldSelected === null && newSelected !== null)
-      Logic.Known();
-    else if (oldSelected !== null && newSelected === null)
-      Logic.Unknown();
+    Logic.changed(this);
+  }
+
+  reset() {
+    this._selected = null;
+    this.updateUI();
   }
 
   valid(): boolean {
@@ -150,13 +159,21 @@ class Edge implements LogicElement {
 }
 
 class Hint implements LogicElement {
-  public num: number;
+  public num: number = null;
   constructor(public name: string, public surroundings: Edge[], public updateUI: () => void) {
     for (var i = 0; i < surroundings.length; ++i)
       surroundings[i].hints.push(this);
   }
 
+  reset() {
+    this.num = null;
+    this.updateUI();
+  }
+
   valid(): boolean {
+    if (this.num === null)
+      return true;
+
     var yesCount = 0;
     var unCount = 0;
     for (var i = 0; i < this.surroundings.length; ++i) {

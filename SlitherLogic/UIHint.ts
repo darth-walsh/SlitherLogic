@@ -52,4 +52,8 @@ class UIHint {
     var draw = Game.getVirtualPoint(this.p).add(this.drawSize.scaled(-0.5));
     this.text.setPosition(draw.x, draw.y);
   }
+
+  reset() {
+    this.hint.reset();
+  }
 }

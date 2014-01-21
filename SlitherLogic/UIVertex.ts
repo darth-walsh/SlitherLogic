@@ -41,4 +41,8 @@ class UIVertex {
     var draw = Game.getVirtualPoint(this.p);
     this.shape.setPosition(draw.x, draw.y);
   }
+
+  reset() {
+    this.vertex.reset();
+  }
 }

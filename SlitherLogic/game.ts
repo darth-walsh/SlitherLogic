@@ -28,7 +28,7 @@ class Game {
   static edges: { [name: string]: UIEdge; };
   static hints: { [name: string]: UIHint; };
 
-  static level = 'hex';
+  static level = 'square';
 
   static get levelFolder(): string {
     return 'data/' + Game.level + '/';
@@ -94,8 +94,15 @@ class Game {
     Game.newButton.on('click', () => {
       ++Game.currentPuzzle;
       Game.loadPuzzle(Game.levelFolder);
+
+      Logic.reset();
       for (var e in Game.edges)
         Game.edges[e].reset();
+      for (var v in Game.vertices)
+        Game.vertices[v].reset();
+      for (var h in Game.hints)
+        Game.hints[h].reset();
+
       Game.menuLayer.hide();
       Game.layer.draw();
     });
@@ -115,7 +122,7 @@ class Game {
     Game.menuLayer.moveToTop();
     Game.menuLayer.hide();
 
-    Logic.onVictory = () => {
+    VictoryLogic.onVictory = () => {
       Game.layer.draw();
       Game.menuLayer.show();
       Game.menuLayer.draw();
@@ -160,8 +167,11 @@ class Game {
       }
 
       for (var e in Game.edges) {
-        Game.edges[e].setHints();
+        Game.edges[e].setPositionFromHints();
       }
+
+      //Wait until all Logic Elements in place until done
+      Logic.init();
 
       //TODO#8 persist which puzzles the user has finished
       Game.loadPuzzle(Game.levelFolder);
@@ -180,7 +190,7 @@ class Game {
         Game.hints['h' + i].setNum(hints.charAt(i));
       Game.layer.draw();
     }).fail(() => {
-        if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + "level)?")) {
+        if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + " level)?")) {
           Game.currentPuzzle = 0;
           Game.loadPuzzle(folder);
         }
