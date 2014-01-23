@@ -83,8 +83,6 @@ class Edge implements LogicElement {
     if (this._selected === newSelected)
       return;
 
-    console.log(this.name + ": " + newSelected); //TODO remove
-
     if (this._selected || newSelected) { // skip false <-> null
       var v1Edges: { [name: string]: Edge } = {};
       this.allConnectedSearch(this.v2, v1Edges);

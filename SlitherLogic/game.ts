@@ -28,7 +28,7 @@ class Game {
   static edges: { [name: string]: UIEdge; };
   static hints: { [name: string]: UIHint; };
 
-  static level = 'square';
+  static level = 'hex';
 
   static get levelFolder(): string {
     return 'data/' + Game.level + '/';
