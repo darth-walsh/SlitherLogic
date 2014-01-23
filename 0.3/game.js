@@ -19,7 +19,6 @@ var Point = (function () {
     };
     Point.prototype.sub = function (p) {
         return this.add(p.scaled(-1));
-        ;
     };
     return Point;
 })();
@@ -86,8 +85,15 @@ var Game = (function () {
         Game.newButton.on('click', function () {
             ++Game.currentPuzzle;
             Game.loadPuzzle(Game.levelFolder);
+
+            Logic.reset();
             for (var e in Game.edges)
                 Game.edges[e].reset();
+            for (var v in Game.vertices)
+                Game.vertices[v].reset();
+            for (var h in Game.hints)
+                Game.hints[h].reset();
+
             Game.menuLayer.hide();
             Game.layer.draw();
         });
@@ -95,10 +101,8 @@ var Game = (function () {
             text: 'New',
             fontSize: 30,
             fontFamily: 'Calibri',
-            fill: 'aqua'
-        });
-        Game.newText.on('click', function () {
-            return Game.newButton.fire('click');
+            fill: 'aqua',
+            listening: false
         });
         Game.newText.setX(-Game.newText.getTextWidth() / 2);
         Game.newText.setY(-Game.newText.getTextHeight() / 2);
@@ -106,10 +110,10 @@ var Game = (function () {
         Game.menuLayer.add(Game.newButton);
         Game.menuLayer.add(Game.newText);
         Game.stage.add(Game.menuLayer);
-        Game.menuLayer.setZIndex(10);
+        Game.menuLayer.moveToTop();
         Game.menuLayer.hide();
 
-        Logic.onVictory = function () {
+        VictoryLogic.onVictory = function () {
             Game.layer.draw();
             Game.menuLayer.show();
             Game.menuLayer.draw();
@@ -121,7 +125,10 @@ var Game = (function () {
     Game.loadLevel = function (url) {
         Game.layer = new Kinetic.Layer();
         Game.stage.add(Game.layer);
-        Game.layer.setZIndex(0);
+        Game.layer.moveToBottom();
+
+        Game.edgeSibs = new Kinetic.Group({});
+        Game.layer.add(Game.edgeSibs);
 
         Game.vertices = {};
         Game.edges = {};
@@ -152,8 +159,10 @@ var Game = (function () {
             }
 
             for (var e in Game.edges) {
-                Game.edges[e].setHints();
+                Game.edges[e].setPositionFromHints();
             }
+
+            Logic.init();
 
             Game.loadPuzzle(Game.levelFolder);
 
@@ -171,7 +180,7 @@ var Game = (function () {
                 Game.hints['h' + i].setNum(hints.charAt(i));
             Game.layer.draw();
         }).fail(function () {
-            if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + "level)?")) {
+            if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + " level)?")) {
                 Game.currentPuzzle = 0;
                 Game.loadPuzzle(folder);
             }
@@ -199,6 +208,7 @@ var Game = (function () {
         Game.stage.setHeight(container.height());
 
         Game.menuLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+        Game.layer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
 
         for (var v in Game.vertices) {
             Game.vertices[v].reposition();
@@ -221,7 +231,7 @@ var Game = (function () {
 
         var ratio = Math.min(xRatio, yRatio);
 
-        return new Point(Math.floor((p.x - Game.puzzleTL.x) * ratio) + Game.margin, Math.floor((p.y - Game.puzzleTL.y) * ratio) + Game.margin);
+        return new Point(Math.floor((p.x - (Game.puzzleBR.x + Game.puzzleTL.x) / 2) * ratio), Math.floor((p.y - (Game.puzzleBR.y + Game.puzzleTL.y) / 2) * ratio));
     };
 
     Game.loop = function () {
@@ -233,7 +243,7 @@ var Game = (function () {
 
     Game.resizing = false;
 
-    Game.margin = 50;
+    Game.margin = 20;
     return Game;
 })();
 

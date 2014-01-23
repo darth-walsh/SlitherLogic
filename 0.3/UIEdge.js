@@ -41,20 +41,21 @@ var UIEdge = (function () {
             else
                 _this.edge.selected = evt.which === 1;
 
-            Game.layer.draw();
+            Game.layer.drawScene();
         });
-        Game.layer.add(this.shape);
-        this.shape.setZIndex(0);
+        Game.edgeSibs.add(this.shape);
 
         this.edge = new Edge(this.name, v1.vertex, v2.vertex, function () {
             switch (_this.edge.selected) {
                 case true:
                     _this.shape.setDashArrayEnabled(false);
                     _this.shape.setStroke(_this.yesColor);
+                    _this.shape.moveToTop();
                     break;
                 case false:
                     _this.shape.setDashArrayEnabled(false);
                     _this.shape.setStroke(UIEdge.noColor);
+                    _this.shape.moveToBottom();
                     break;
                 case null:
                     _this.shape.setDashArrayEnabled(true);
@@ -96,10 +97,10 @@ var UIEdge = (function () {
     };
 
     UIEdge.prototype.reset = function () {
-        this.edge.selected = null;
+        this.edge.reset();
     };
 
-    UIEdge.prototype.setHints = function () {
+    UIEdge.prototype.setPositionFromHints = function () {
         var l = this.edge.hints.length;
         if (l == 0 || l > 2)
             throw this.name + ": doesn't have 1 or 2 edges";

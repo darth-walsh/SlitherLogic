@@ -10,7 +10,8 @@ var UIHint = (function () {
             text: ' ',
             fontSize: UIHint.fontSize,
             fontFamily: UIHint.fontFamily,
-            fill: UIHint.yesColor
+            fill: UIHint.yesColor,
+            listening: false
         });
 
         Game.layer.add(this.text);
@@ -39,6 +40,10 @@ var UIHint = (function () {
     UIHint.prototype.reposition = function () {
         var draw = Game.getVirtualPoint(this.p).add(this.drawSize.scaled(-0.5));
         this.text.setPosition(draw.x, draw.y);
+    };
+
+    UIHint.prototype.reset = function () {
+        this.hint.reset();
     };
     UIHint.fontSize = 20;
     UIHint.fontFamily = 'Calibri';

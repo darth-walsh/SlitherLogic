@@ -1,197 +1,84 @@
-var Vertex = (function () {
-    function Vertex(name, updateUI) {
-        this.name = name;
-        this.updateUI = updateUI;
-        this.surroundings = [];
-        Logic.vertices.push(this);
-    }
-    Vertex.prototype.connectedSelected = function (from) {
-        var fromV;
-        if (this === from.v1)
-            if (this === from.v2)
-                throw "Edges can't be a loop";
-            else
-                fromV = from.v2;
-        else if (this === from.v2)
-            fromV = from.v1;
-        else
-            throw "Edge didn't connect to this Vertex";
-
-        var found = [];
-        for (var i = 0; i < this.surroundings.length; ++i) {
-            var to = this.surroundings[i];
-            if (to.selected === true && to !== from)
-                found.push(to);
-        }
-
-        return found;
-    };
-
-    Vertex.prototype.valid = function () {
-        var yesCount = 0;
-        var unCount = 0;
-        for (var i = 0; i < this.surroundings.length; ++i) {
-            switch (this.surroundings[i].selected) {
-                case true:
-                    ++yesCount;
-                    break;
-                case null:
-                    ++unCount;
-            }
-        }
-        var possible = yesCount <= 2 && !(yesCount === 1 && unCount === 0);
-        if (unCount !== 0 && possible)
-            return null;
-        return possible;
-    };
-    return Vertex;
-})();
-
-var Edge = (function () {
-    function Edge(name, v1, v2, updateUI) {
-        this.name = name;
-        this.v1 = v1;
-        this.v2 = v2;
-        this.updateUI = updateUI;
-        this.hints = [];
-        this._selected = null;
-        v1.surroundings.push(this);
-        v2.surroundings.push(this);
-
-        Logic.edges.push(this);
-        Logic.Unknown();
-    }
-    Object.defineProperty(Edge.prototype, "selected", {
-        get: function () {
-            return this._selected;
-        },
-        set: function (newSelected) {
-            if (this._selected === newSelected)
-                return;
-
-            if (this._selected || newSelected) {
-                var v1Edges = {};
-                this.allConnectedSearch(this.v2, v1Edges);
-                var v1Count = 0;
-                var v1Id = null;
-                for (var key in v1Edges) {
-                    ++v1Count;
-                    if (!v1Id)
-                        v1Id = v1Edges[key].id;
-                }
-
-                var v2Edges = {};
-                this.allConnectedSearch(this.v1, v2Edges);
-                var v2Count = 0;
-                var v2Id = null;
-                for (var key in v2Edges) {
-                    ++v2Count;
-                    if (!v2Id)
-                        v2Id = v2Edges[key].id;
-                }
-
-                if (v1Count && v2Count) {
-                    var reassignV2 = v1Count > v2Count;
-                    var toAssignEdges = reassignV2 ? v2Edges : v1Edges;
-                    var toAssignId = newSelected === true ? (reassignV2 ? v1Id : v2Id) : Edge.uniqueId++;
-
-                    this.id = toAssignId;
-                    for (var key in toAssignEdges) {
-                        toAssignEdges[key].id = toAssignId;
-                        toAssignEdges[key].updateUI();
-                    }
-                } else if (newSelected === true) {
-                    this.id = v1Id || v2Id;
-                    if (this.id === null)
-                        this.id = Edge.uniqueId++;
-                }
-            }
-
-            var oldSelected = this._selected;
-            this._selected = newSelected;
-
-            this.v1.updateUI();
-            this.v2.updateUI();
-            for (var i = 0; i < this.hints.length; ++i)
-                this.hints[i].updateUI();
-            this.updateUI();
-
-            if (oldSelected === null && newSelected !== null)
-                Logic.Known();
-            else if (oldSelected !== null && newSelected === null)
-                Logic.Unknown();
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    Edge.prototype.valid = function () {
-        return this.selected === null ? null : true;
-    };
-
-    Edge.prototype.allConnectedSearch = function (from, edges) {
-        var toV = from === this.v1 ? this.v2 : this.v1;
-
-        var toEdges = toV.connectedSelected(this);
-        for (var i = 0; i < toEdges.length; ++i) {
-            var to = toEdges[i];
-            if (!edges[to.name]) {
-                edges[to.name] = to;
-                to.allConnectedSearch(toV, edges);
-            }
-        }
-    };
-    Edge.uniqueId = 1;
-    return Edge;
-})();
-
-var Hint = (function () {
-    function Hint(name, surroundings, updateUI) {
-        this.name = name;
-        this.surroundings = surroundings;
-        this.updateUI = updateUI;
-        for (var i = 0; i < surroundings.length; ++i)
-            surroundings[i].hints.push(this);
-    }
-    Hint.prototype.valid = function () {
-        var yesCount = 0;
-        var unCount = 0;
-        for (var i = 0; i < this.surroundings.length; ++i) {
-            switch (this.surroundings[i].selected) {
-                case true:
-                    ++yesCount;
-                    break;
-                case null:
-                    ++unCount;
-            }
-        }
-        var possible = yesCount <= this.num && this.num <= yesCount + unCount;
-        if (unCount !== 0 && possible)
-            return null;
-        return possible;
-    };
-    return Hint;
-})();
-
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 var Logic = (function () {
     function Logic() {
     }
-    Logic.Unknown = function () {
-        ++Logic.unknown;
+    Logic.init = function () {
+        Logic.logics.push(new VictoryLogic());
+        Logic.logics.push(new VertexLogic());
+        Logic.logics.push(new HintLogic());
     };
-    Logic.Known = function () {
-        --Logic.unknown;
 
+    Logic.reset = function () {
+        for (var i = 0; i < Logic.logics.length; ++i)
+            Logic.logics[i]._reset();
+    };
+
+    Logic.changed = function (edge) {
+        for (var i = 0; i < Logic.logics.length; ++i)
+            Logic.logics[i]._changed(edge);
+    };
+
+    Logic.setEdge = function (setTo, edges) {
+        if (setTo !== null)
+            for (var i = 0; i < edges.length; ++i)
+                Logic.edgeQueue.push({ setTo: setTo, edge: edges[i] });
+
+        while (Logic.edgeQueue.length > 0) {
+            var toSet = Logic.edgeQueue.shift();
+            toSet.edge.selected = toSet.setTo;
+        }
+    };
+
+    Logic.prototype._changed = function (edge) {
+        throw "Logic._changed() is abstract and shouldn't be called";
+    };
+    Logic.prototype._reset = function () {
+    };
+    Logic.edgeQueue = [];
+
+    Logic.vertices = [];
+    Logic.edges = [];
+    Logic.hints = [];
+
+    Logic.logics = [];
+    return Logic;
+})();
+
+var VictoryLogic = (function (_super) {
+    __extends(VictoryLogic, _super);
+    function VictoryLogic() {
+        _super.call(this);
+        this._reset();
+    }
+    VictoryLogic.prototype._reset = function () {
+        this.unknown = Logic.edges.length;
+    };
+
+    VictoryLogic.prototype._changed = function (edge) {
+        if (edge.valid() === null)
+            ++this.unknown;
+        else {
+            --this.unknown;
+            this.tryVictory();
+        }
+    };
+
+    VictoryLogic.prototype.tryVictory = function () {
         var loopId = null;
 
-        if (Logic.unknown === 0) {
+        if (this.unknown === 0) {
             var done = true;
-            for (var i = 0; i < Logic.vertices.length && done; ++i)
-                if (Logic.vertices[i].valid() !== true)
+            for (var i = 0; i < VictoryLogic.vertices.length && done; ++i)
+                if (VictoryLogic.vertices[i].valid() !== true)
                     done = false;
 
-            for (var i = 0; i < Logic.edges.length; ++i) {
-                var edge = Logic.edges[i];
+            for (var i = 0; i < VictoryLogic.edges.length; ++i) {
+                var edge = VictoryLogic.edges[i];
                 if (edge.valid() !== true)
                     done = false;
                 if (edge.selected)
@@ -202,19 +89,97 @@ var Logic = (function () {
                             done = false;
             }
 
-            for (var i = 0; i < Logic.hints.length && done; ++i)
-                if (Logic.hints[i].valid() !== true)
+            for (var i = 0; i < VictoryLogic.hints.length && done; ++i)
+                if (VictoryLogic.hints[i].valid() !== true)
                     done = false;
 
-            if (done) {
-                Logic.onVictory();
-            }
+            if (done)
+                VictoryLogic.onVictory();
         }
     };
-    Logic.unknown = 0;
+    return VictoryLogic;
+})(Logic);
 
-    Logic.vertices = [];
-    Logic.edges = [];
-    Logic.hints = [];
-    return Logic;
-})();
+var VertexLogic = (function (_super) {
+    __extends(VertexLogic, _super);
+    function VertexLogic() {
+        _super.apply(this, arguments);
+    }
+    VertexLogic.prototype._changed = function (edge) {
+        this.vertexLogic(edge.v1);
+        this.vertexLogic(edge.v2);
+    };
+
+    VertexLogic.prototype.vertexLogic = function (vertex) {
+        var yesEdges = [];
+        var noEdges = [];
+        var nullEdges = [];
+
+        for (var i = 0; i < vertex.surroundings.length; ++i) {
+            var e = vertex.surroundings[i];
+            switch (e.selected) {
+                case true:
+                    yesEdges.push(e);
+                    break;
+                case false:
+                    noEdges.push(e);
+                    break;
+                case null:
+                    nullEdges.push(e);
+                    break;
+            }
+        }
+
+        var setTo = null;
+        if (yesEdges.length === 2 || yesEdges.length === 0 && nullEdges.length === 1)
+            setTo = false;
+
+        if (yesEdges.length === 1 && nullEdges.length === 1)
+            setTo = true;
+
+        Logic.setEdge(setTo, nullEdges);
+    };
+    return VertexLogic;
+})(Logic);
+
+var HintLogic = (function (_super) {
+    __extends(HintLogic, _super);
+    function HintLogic() {
+        _super.apply(this, arguments);
+    }
+    HintLogic.prototype._changed = function (edge) {
+        for (var i = 0; i < edge.hints.length; ++i)
+            this.hintLogic(edge.hints[i]);
+    };
+
+    HintLogic.prototype.hintLogic = function (hint) {
+        var yesEdges = [];
+        var noEdges = [];
+        var nullEdges = [];
+
+        for (var i = 0; i < hint.surroundings.length; ++i) {
+            var e = hint.surroundings[i];
+            switch (e.selected) {
+                case true:
+                    yesEdges.push(e);
+                    break;
+                case false:
+                    noEdges.push(e);
+                    break;
+                case null:
+                    nullEdges.push(e);
+                    break;
+            }
+        }
+
+        var setTo = null;
+        if (yesEdges.length + nullEdges.length === hint.num)
+            setTo = true;
+
+        if (yesEdges.length === hint.num)
+            setTo = false;
+
+        Logic.setEdge(setTo, nullEdges);
+    };
+    return HintLogic;
+})(Logic);
