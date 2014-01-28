@@ -33,7 +33,7 @@ var UIEdge = (function () {
             if (evt.which === 2)
                 return;
 
-            if (Game.menuLayer.getVisible())
+            if (Game.newLayer.getVisible())
                 return;
 
             if (_this.edge.selected !== null)
@@ -74,6 +74,13 @@ var UIEdge = (function () {
         enumerable: true,
         configurable: true
     });
+
+    UIEdge.prototype.destroy = function () {
+        this.edge.destroy();
+        this.edge = null;
+
+        this.shape.destroy();
+    };
 
     Object.defineProperty(UIEdge.prototype, "strokeWidth", {
         get: function () {

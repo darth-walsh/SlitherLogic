@@ -72,7 +72,7 @@ var Game = (function () {
             height: window.innerHeight
         });
 
-        Game.menuLayer = new Kinetic.Layer();
+        Game.newLayer = new Kinetic.Layer();
         Game.newButton = new Kinetic.Rect({
             x: -50,
             width: 100,
@@ -84,7 +84,7 @@ var Game = (function () {
         });
         Game.newButton.on('click', function () {
             ++Game.currentPuzzle;
-            Game.loadPuzzle(Game.levelFolder);
+            Game.loadPuzzle();
 
             Logic.reset();
             for (var e in Game.edges)
@@ -94,7 +94,7 @@ var Game = (function () {
             for (var h in Game.hints)
                 Game.hints[h].reset();
 
-            Game.menuLayer.hide();
+            Game.newLayer.hide();
             Game.layer.draw();
         });
         Game.newText = new Kinetic.Text({
@@ -107,22 +107,43 @@ var Game = (function () {
         Game.newText.setX(-Game.newText.getTextWidth() / 2);
         Game.newText.setY(-Game.newText.getTextHeight() / 2);
 
-        Game.menuLayer.add(Game.newButton);
-        Game.menuLayer.add(Game.newText);
+        Game.newLayer.add(Game.newButton);
+        Game.newLayer.add(Game.newText);
+        Game.stage.add(Game.newLayer);
+
+        Game.newLayer.moveToTop();
+        Game.newLayer.hide();
+
+        Game.menuLayer = new Kinetic.Layer();
+        Game.levelButton = new Kinetic.Rect({
+            x: 0,
+            y: 0,
+            width: 30,
+            height: 30,
+            fill: 'blue'
+        });
+        Game.levelButton.on('click', function () {
+            var newLevel = prompt('Type a new level! (square hex triangle dodec test)', Game.level);
+            Game.unloadLevel();
+            Game.level = newLevel;
+            Game.loadLevel();
+        });
+
+        Game.menuLayer.add(Game.levelButton);
+
         Game.stage.add(Game.menuLayer);
-        Game.menuLayer.moveToTop();
-        Game.menuLayer.hide();
 
         VictoryLogic.onVictory = function () {
             Game.layer.draw();
-            Game.menuLayer.show();
-            Game.menuLayer.draw();
+            Game.newLayer.show();
+            Game.newLayer.draw();
         };
 
-        Game.loadLevel(Game.levelFolder + 'level.json');
+        Game.loadLevel();
     };
 
-    Game.loadLevel = function (url) {
+    Game.loadLevel = function () {
+        var url = Game.levelFolder + 'level.json';
         Game.layer = new Kinetic.Layer();
         Game.stage.add(Game.layer);
         Game.layer.moveToBottom();
@@ -158,13 +179,12 @@ var Game = (function () {
                 }));
             }
 
-            for (var e in Game.edges) {
+            for (var e in Game.edges)
                 Game.edges[e].setPositionFromHints();
-            }
 
             Logic.init();
 
-            Game.loadPuzzle(Game.levelFolder);
+            Game.loadPuzzle();
 
             Game.resize();
         }).fail(function () {
@@ -172,7 +192,37 @@ var Game = (function () {
         });
     };
 
-    Game.loadPuzzle = function (folder) {
+    Game.unloadLevel = function () {
+        Logic.destroy();
+
+        for (var h in Game.hints)
+            Game.hints[h].destroy();
+
+        for (var e in Game.edges)
+            Game.edges[e].destroy();
+
+        for (var v in Game.vertices)
+            Game.vertices[v].destroy();
+
+        Game.hints = {};
+        Game.edges = {};
+        Game.vertices = {};
+
+        Edge.uniqueId = 1;
+
+        if (Game.edgeSibs.hasChildren())
+            throw 'not all elements removed from edgeSibs';
+
+        Game.edgeSibs.destroy();
+
+        if (Game.layer.hasChildren())
+            throw 'not all elements removed from layer';
+
+        Game.layer.destroy();
+    };
+
+    Game.loadPuzzle = function () {
+        var folder = Game.levelFolder;
         var url = folder + Game.currentPuzzle + '.txt';
         $.get(url, function (hints) {
             hints = hints.replace(/[\r\n]/g, "");
@@ -182,7 +232,7 @@ var Game = (function () {
         }).fail(function () {
             if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + " level)?")) {
                 Game.currentPuzzle = 0;
-                Game.loadPuzzle(folder);
+                Game.loadPuzzle();
             }
         });
     };
@@ -207,7 +257,8 @@ var Game = (function () {
         Game.stage.setWidth(container.width());
         Game.stage.setHeight(container.height());
 
-        Game.menuLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+        Game.newLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+        Game.menuLayer.setOffset(-Game.stage.getWidth() + Game.levelButton.getWidth(), 0);
         Game.layer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
 
         for (var v in Game.vertices) {

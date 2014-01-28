@@ -22,6 +22,14 @@ var UIHint = (function () {
             _this.text.setFill(_this.hint.valid() !== false ? UIHint.yesColor : UIHint.noColor);
         });
     }
+    UIHint.prototype.destroy = function () {
+        this.hint.destroy();
+        this.hint = null;
+        this.text.destroy();
+        this.drawSize = null;
+        this.p = null;
+    };
+
     UIHint.prototype.setNum = function (s) {
         if (s !== ' ') {
             this.num = parseInt(s, 36);

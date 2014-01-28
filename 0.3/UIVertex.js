@@ -27,6 +27,12 @@ var UIVertex = (function () {
 
         this.vertex.updateUI();
     }
+    UIVertex.prototype.destroy = function () {
+        this.vertex.destroy();
+        this.vertex = null;
+        this.shape.destroy();
+    };
+
     UIVertex.prototype.reposition = function () {
         var draw = Game.getVirtualPoint(this.p);
         this.shape.setPosition(draw.x, draw.y);

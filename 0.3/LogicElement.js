@@ -5,6 +5,11 @@ var Vertex = (function () {
         this.surroundings = [];
         Logic.vertices.push(this);
     }
+    Vertex.prototype.destroy = function () {
+        this.surroundings = null;
+        this.updateUI = null;
+    };
+
     Vertex.prototype.connectedSelected = function (from) {
         var fromV;
         if (this === from.v1)
@@ -67,6 +72,13 @@ var Edge = (function () {
 
         Logic.edges.push(this);
     }
+    Edge.prototype.destroy = function () {
+        this.hints = null;
+        this.v1 = null;
+        this.v2 = null;
+        this.updateUI = null;
+    };
+
     Object.defineProperty(Edge.prototype, "selected", {
         get: function () {
             return this._selected;
@@ -162,6 +174,11 @@ var Hint = (function () {
         for (var i = 0; i < surroundings.length; ++i)
             surroundings[i].hints.push(this);
     }
+    Hint.prototype.destroy = function () {
+        this.surroundings = null;
+        this.updateUI = null;
+    };
+
     Hint.prototype.reset = function () {
         this.num = null;
         this.updateUI();

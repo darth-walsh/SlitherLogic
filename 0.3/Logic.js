@@ -13,6 +13,14 @@ var Logic = (function () {
         Logic.logics.push(new HintLogic());
     };
 
+    Logic.destroy = function () {
+        Logic.edgeQueue.length = 0;
+        Logic.vertices.length = 0;
+        Logic.edges.length = 0;
+        Logic.hints.length = 0;
+        Logic.logics.length = 0;
+    };
+
     Logic.reset = function () {
         for (var i = 0; i < Logic.logics.length; ++i)
             Logic.logics[i]._reset();
@@ -73,12 +81,12 @@ var VictoryLogic = (function (_super) {
 
         if (this.unknown === 0) {
             var done = true;
-            for (var i = 0; i < VictoryLogic.vertices.length && done; ++i)
-                if (VictoryLogic.vertices[i].valid() !== true)
+            for (var i = 0; i < Logic.vertices.length && done; ++i)
+                if (Logic.vertices[i].valid() !== true)
                     done = false;
 
-            for (var i = 0; i < VictoryLogic.edges.length; ++i) {
-                var edge = VictoryLogic.edges[i];
+            for (var i = 0; i < Logic.edges.length; ++i) {
+                var edge = Logic.edges[i];
                 if (edge.valid() !== true)
                     done = false;
                 if (edge.selected)
@@ -89,8 +97,8 @@ var VictoryLogic = (function (_super) {
                             done = false;
             }
 
-            for (var i = 0; i < VictoryLogic.hints.length && done; ++i)
-                if (VictoryLogic.hints[i].valid() !== true)
+            for (var i = 0; i < Logic.hints.length && done; ++i)
+                if (Logic.hints[i].valid() !== true)
                     done = false;
 
             if (done)
