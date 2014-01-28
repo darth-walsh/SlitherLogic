@@ -5,12 +5,19 @@ interface LogicElement {
   // Null if remaining unknowns and posibly logically correct depending on how unknowns chosen
   // True if logically correct and all inputs known
   valid(): boolean;
+
+  destroy();
 }
 
 class Vertex implements LogicElement {
   public surroundings: Edge[] = [];
   constructor(public name: string, public updateUI: () => void) {
     Logic.vertices.push(this);
+  }
+
+  destroy() {
+    this.surroundings = null;
+    this.updateUI = null;
   }
 
   connectedSelected(from: Edge): Edge[] {
@@ -74,6 +81,13 @@ class Edge implements LogicElement {
     v2.surroundings.push(this);
 
     Logic.edges.push(this);
+  }
+
+  destroy() {
+    this.hints = null;
+    this.v1 = null;
+    this.v2 = null;
+    this.updateUI = null;
   }
 
   get selected(): boolean {
@@ -161,6 +175,11 @@ class Hint implements LogicElement {
   constructor(public name: string, public surroundings: Edge[], public updateUI: () => void) {
     for (var i = 0; i < surroundings.length; ++i)
       surroundings[i].hints.push(this);
+  }
+
+  destroy() {
+    this.surroundings = null;
+    this.updateUI = null;
   }
 
   reset() {

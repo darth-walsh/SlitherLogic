@@ -1,7 +1,7 @@
 /// <reference path="lib\jquery.d.ts" />
 /// <reference path="lib\kinetic.d.ts" />
 
-class UIHint {
+class UIHint implements UIElement {
   static fontSize = 20;
   static fontFamily = 'Calibri';
   static yesColor = 'white';
@@ -31,6 +31,14 @@ class UIHint {
     this.hint = new Hint(this.name, es.map(e => e.edge), () => {
       this.text.setFill(this.hint.valid() !== false ? UIHint.yesColor : UIHint.noColor);
     });
+  }
+
+  destroy() {
+    this.hint.destroy();
+    this.hint = null;
+    this.text.destroy();
+    this.drawSize = null;
+    this.p = null;
   }
 
   setNum(s: string) {

@@ -101,6 +101,7 @@ declare module Kinetic {
     get(selector);
     getChildren();
     getIntersections(point);
+    hasChildren(): boolean;
     isAncestorOf(node);
     remove(child);
     removeChildren();

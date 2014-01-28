@@ -3,6 +3,12 @@
 
 declare var requestAnimFrame: (f: () => any) => any; //TODO#12 delete?
 
+interface UIElement {
+  reposition();
+  reset();
+  destroy();
+}
+
 class Point {
   constructor(public x: number = 0, public y: number = 0) { }
   static from(o) {
@@ -93,7 +99,7 @@ class Game {
     });
     Game.newButton.on('click', () => {
       ++Game.currentPuzzle;
-      Game.loadPuzzle(Game.levelFolder);
+      Game.loadPuzzle();
 
       Logic.reset();
       for (var e in Game.edges)
@@ -128,10 +134,11 @@ class Game {
       Game.menuLayer.draw();
     };
 
-    Game.loadLevel(Game.levelFolder + 'level.json');
+    Game.loadLevel();
   }
 
-  static loadLevel(url: string) {
+  static loadLevel() {
+    var url: string = Game.levelFolder + 'level.json'
     Game.layer = new Kinetic.Layer();
     Game.stage.add(Game.layer);
     Game.layer.moveToBottom();
@@ -139,7 +146,6 @@ class Game {
     Game.edgeSibs = new Kinetic.Group({});
     Game.layer.add(Game.edgeSibs);
     
-    //TODO#7 clean out circular references?
     Game.vertices = {};
     Game.edges = {};
     Game.hints = {};
@@ -166,15 +172,15 @@ class Game {
         Game.hints[h] = new UIHint(h, hint.position, hint.edges.map(e => Game.edges[e]));
       }
 
-      for (var e in Game.edges) {
+      for (var e in Game.edges)
         Game.edges[e].setPositionFromHints();
-      }
+      
 
       //Wait until all Logic Elements in place until done
       Logic.init();
 
       //TODO#8 persist which puzzles the user has finished
-      Game.loadPuzzle(Game.levelFolder);
+      Game.loadPuzzle();
 
       //Game.loop(); //TODO#12 delete?
       Game.resize();
@@ -182,7 +188,38 @@ class Game {
         alert("Can't load " + url + ", sorry."));
   }
 
-  static loadPuzzle(folder: string) {
+  static unloadLevel() {
+    Logic.destroy();
+
+    for (var h in Game.hints)
+      Game.hints[h].destroy();
+
+    for (var e in Game.edges)
+      Game.edges[e].destroy();
+    
+    for (var v in Game.vertices)
+      Game.vertices[v].destroy();
+    
+
+    Game.hints = {};
+    Game.edges = {};
+    Game.vertices = {};
+
+    Edge.uniqueId = 1;
+
+    if (Game.edgeSibs.hasChildren())
+      throw 'not all elements removed from edgeSibs';
+
+    Game.edgeSibs.destroy();
+
+    if (Game.layer.hasChildren())
+      throw 'not all elements removed from layer';
+
+    Game.layer.destroy();
+  }
+
+  static loadPuzzle() {
+    var folder = Game.levelFolder;
     var url = folder + Game.currentPuzzle + '.txt';
     $.get(url, hints => {
       hints = hints.replace(/[\r\n]/g, "");
@@ -192,7 +229,7 @@ class Game {
     }).fail(() => {
         if (confirm("Can't load the puzzle, sorry.\nDo you want to reset your progress (just for the " + Game.level + " level)?")) {
           Game.currentPuzzle = 0;
-          Game.loadPuzzle(folder);
+          Game.loadPuzzle();
         }
       });
   }

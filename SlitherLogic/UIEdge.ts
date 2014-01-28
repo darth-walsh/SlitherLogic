@@ -1,7 +1,7 @@
 /// <reference path="lib\jquery.d.ts" />
 /// <reference path="lib\kinetic.d.ts" />
 
-class UIEdge {
+class UIEdge implements UIElement {
   static yesWidth = 5;
   static noWidth = 2;
   static unWidth = 2;
@@ -81,6 +81,13 @@ class UIEdge {
       this.shape.setStrokeWidth(this.strokeWidth);
     });
     this.edge.updateUI();
+  }
+
+  destroy() {
+    this.edge.destroy();
+    this.edge = null;
+
+    this.shape.destroy();
   }
 
   get strokeWidth(): number {

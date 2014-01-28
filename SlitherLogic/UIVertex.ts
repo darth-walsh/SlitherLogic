@@ -1,7 +1,7 @@
 /// <reference path="lib\jquery.d.ts" />
 /// <reference path="lib\kinetic.d.ts" />
 
-class UIVertex {
+class UIVertex implements UIElement {
   static radius = 5;
   static unColor = 'white';
   static noColor = 'red';
@@ -35,6 +35,12 @@ class UIVertex {
     });
 
     this.vertex.updateUI();
+  }
+
+  destroy() {
+    this.vertex.destroy();
+    this.vertex = null;
+    this.shape.destroy();
   }
 
   reposition() {

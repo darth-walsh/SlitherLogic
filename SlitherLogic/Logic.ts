@@ -5,6 +5,15 @@ class Logic {
     Logic.logics.push(new HintLogic());
   }
 
+  public static destroy() {
+    // modifies all derived instances of the element too
+    Logic.edgeQueue.length = 0;
+    Logic.vertices.length = 0;
+    Logic.edges.length = 0;
+    Logic.hints.length = 0;
+    Logic.logics.length = 0;
+  }
+
   public static reset() {
     for (var i = 0; i < Logic.logics.length; ++i)
       Logic.logics[i]._reset();
@@ -70,12 +79,12 @@ class VictoryLogic extends Logic {
     
     if (this.unknown === 0) {
       var done = true;
-      for (var i = 0; i < VictoryLogic.vertices.length && done; ++i)
-        if (VictoryLogic.vertices[i].valid() !== true)
+      for (var i = 0; i < Logic.vertices.length && done; ++i)
+        if (Logic.vertices[i].valid() !== true)
           done = false;
 
-      for (var i = 0; i < VictoryLogic.edges.length; ++i) {
-        var edge = VictoryLogic.edges[i]
+      for (var i = 0; i < Logic.edges.length; ++i) {
+        var edge = Logic.edges[i]
         if (edge.valid() !== true)
           done = false; //TODO#13 harden so we feel comfortable this won't happen
         if (edge.selected)
@@ -86,8 +95,8 @@ class VictoryLogic extends Logic {
               done = false;
       }
 
-      for (var i = 0; i < VictoryLogic.hints.length && done; ++i)
-        if (VictoryLogic.hints[i].valid() !== true)
+      for (var i = 0; i < Logic.hints.length && done; ++i)
+        if (Logic.hints[i].valid() !== true)
           done = false;
 
       if (done)
