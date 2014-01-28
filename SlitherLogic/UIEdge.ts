@@ -49,7 +49,7 @@ class UIEdge implements UIElement {
       if (evt.which === 2) // middle
         return;
 
-      if (Game.menuLayer.getVisible())
+      if (Game.newLayer.getVisible())
         return;
 
       if (this.edge.selected !== null)

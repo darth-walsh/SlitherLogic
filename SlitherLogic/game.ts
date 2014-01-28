@@ -57,9 +57,12 @@ class Game {
   static layer: Kinetic.Layer;
   static edgeSibs: Kinetic.Group;
 
-  static menuLayer: Kinetic.Layer;
+  static newLayer: Kinetic.Layer;
   static newButton: Kinetic.Rect;
   static newText: Kinetic.Text;
+
+  static menuLayer: Kinetic.Layer;
+  static levelButton: Kinetic.Rect;
 
   static init() {
     var ua = navigator.userAgent.toLowerCase();
@@ -87,7 +90,7 @@ class Game {
       height: window.innerHeight
     });
 
-    Game.menuLayer = new Kinetic.Layer();
+    Game.newLayer = new Kinetic.Layer();
     Game.newButton = new Kinetic.Rect({
       x: -50,
       width: 100,
@@ -109,7 +112,7 @@ class Game {
       for (var h in Game.hints)
         Game.hints[h].reset();
 
-      Game.menuLayer.hide();
+      Game.newLayer.hide();
       Game.layer.draw();
     });
     Game.newText = new Kinetic.Text({
@@ -122,16 +125,36 @@ class Game {
     Game.newText.setX(-Game.newText.getTextWidth() / 2);
     Game.newText.setY(-Game.newText.getTextHeight() / 2);
 
-    Game.menuLayer.add(Game.newButton);
-    Game.menuLayer.add(Game.newText);
-    Game.stage.add(Game.menuLayer);
-    Game.menuLayer.moveToTop();
-    Game.menuLayer.hide();
+    Game.newLayer.add(Game.newButton);
+    Game.newLayer.add(Game.newText);
+    Game.stage.add(Game.newLayer);
+    
+    Game.newLayer.moveToTop();
+    Game.newLayer.hide();
 
+    Game.menuLayer = new Kinetic.Layer();
+    Game.levelButton = new Kinetic.Rect({
+      x: 0,
+      y: 0,
+      width: 30,
+      height: 30,
+      fill: 'blue'
+    });
+    Game.levelButton.on('click', () => {
+      var newLevel = prompt('Type a new level! (square hex triangle dodec test)', Game.level);
+      Game.unloadLevel();
+      Game.level = newLevel;
+      Game.loadLevel();
+    });
+
+    Game.menuLayer.add(Game.levelButton);
+    
+    Game.stage.add(Game.menuLayer);
+    
     VictoryLogic.onVictory = () => {
       Game.layer.draw();
-      Game.menuLayer.show();
-      Game.menuLayer.draw();
+      Game.newLayer.show();
+      Game.newLayer.draw();
     };
 
     Game.loadLevel();
@@ -256,8 +279,11 @@ class Game {
     Game.stage.setWidth(container.width());
     Game.stage.setHeight(container.height());
 
-    Game.menuLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+    Game.newLayer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+    Game.menuLayer.setOffset(-Game.stage.getWidth() + Game.levelButton.getWidth(), 0);
     Game.layer.setOffset(-Game.stage.getWidth() / 2, -Game.stage.getHeight() / 2);
+
+    
 
     //TODO#10 use Game.ios||android
 
