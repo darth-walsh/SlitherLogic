@@ -11,6 +11,6 @@ Instead of being an app for just one program, SlitherLogic is written in HTML5. 
 
 See something you want to change? You can!
 
-Take a look at the GitHub [setup] (https://help.github.com/articles/set-up-git) and [forking](https://help.github.com/articles/fork-a-repo) sections.
+Take a look at the GitHub [setup](https://help.github.com/articles/set-up-git) and [forking](https://help.github.com/articles/fork-a-repo) sections.
 
 Then see [getting started](GettingStarted.md) for project-specific help.
